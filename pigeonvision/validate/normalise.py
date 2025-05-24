@@ -84,6 +84,7 @@ if __name__ == '__main__':
     assert url('https://GoOgle.com#fragment') == 'google.com'
     assert url('https://google.com?query=param') == 'google.com'
     assert url('username@example.com/path') == 'example.com/path'
+    assert url('https://example.com:8080/path') == 'example.com:8080/path'
     assert url('username:password@example.com') == 'example.com'
     assert (url(
         'https://www.google.com/path?query=param&foo=bar#attribute') ==
