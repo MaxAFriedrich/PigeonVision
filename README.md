@@ -30,3 +30,5 @@ Our confidence intervals and language used in our statements are as follows:
 - Team Cymru 50%
 - SPF 100%
 - DMARC 100%
+- Censys 90%
+- https://www.hybrid-analysis.com/ 90%
