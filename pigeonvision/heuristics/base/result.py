@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Result:
-    is_safe: bool
     certainty: float
     message: str
     raw: dict
@@ -13,7 +12,6 @@ class Result:
 
     def __dict__(self):
         return {
-            'is_safe': self.is_safe,
             'certainty': self.certainty,
             'message': self.message,
             'raw': self.raw,
@@ -23,7 +21,6 @@ class Result:
     @classmethod
     def from_dict(cls, data: dict) -> Result:
         return cls(
-            is_safe=data.get('is_safe', False),
             certainty=data.get('certainty', 0.0),
             message=data.get('message', ''),
             raw=data.get('raw', {}),

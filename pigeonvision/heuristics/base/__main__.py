@@ -14,7 +14,6 @@ def test():
         def fetch(query: str, query_type: QueryType):
             # Simulate fetching data
             return Result(
-                is_safe=True,
                 certainty=0.95,
                 message="This is a test heuristic result.",
                 raw={"query": query, "type": query_type.value},
