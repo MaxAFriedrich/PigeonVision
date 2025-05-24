@@ -1,5 +1,4 @@
-import time
-
+from pigeonvision.validate.utils import QueryType
 from pigeonvision.heuristics.base import Result
 
 
@@ -12,7 +11,7 @@ class AllHeuristics:
     rarely = []
 
 
-def run(query: str, query_type: QueryType) -> Result:
+def run(query: str, query_type: QueryType) -> (float, str):
     """
     Runs all heuristics for the given query and query type.
 
@@ -23,9 +22,7 @@ def run(query: str, query_type: QueryType) -> Result:
     certainty = 0.0
     messages = []
 
-    return Result(
-        certainty=certainty,
-        message=' <br>\n'.join(messages),
-        raw={},
-        timestamp=time.time()
+    return (
+        certainty,
+        ' <br>\n'.join(messages)
     )
