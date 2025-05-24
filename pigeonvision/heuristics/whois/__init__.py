@@ -1,4 +1,6 @@
 import time
+import requests
+from bs4 import BeautifulSoup
 
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
@@ -13,8 +15,21 @@ class whois(Heuristic):
     @staticmethod
     def fetch(query: str, query_type: QueryType):
         # Simulate fetching data
-        raise NotImplementedError(
-            "This is a test heuristic and does not implement fetch.")
+        params = {
+            'domain': query,
+        }
+
+        res = requests.get(f'https://www.whois.com/whois/{query}', params=params)
+
+        whois = {}
+
+        data = BeautifulSoup(res.text, 'html.parser').main
+
+        for div in data.find_all("div", {"class": "df-row"}):
+
+            whois[div.contents[0].text] = div.contents[1].text
+
+        print(whois)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:

@@ -102,11 +102,15 @@ def run_heuristic_list(
             messages.append(f"{heuristic_name} did not return a valid result.")
             continue
 
+        messages.append(result.message)
+
+        if result.certainty == -1: continue
+
         reliability = calculate_reliability(result.certainty,
                                             trustworthiness_value)
         reliabilities.append(reliability)
         trustworthiness.append(trustworthiness_value)
-        messages.append(result.message)
+        
 
     return reliabilities, trustworthiness, messages
 
