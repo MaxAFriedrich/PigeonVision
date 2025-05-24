@@ -9,7 +9,16 @@ class Result:
     certainty: float
     message: str
     raw: dict
-    timestamp: int
+    timestamp: float
+
+    def __dict__(self):
+        return {
+            'is_safe': self.is_safe,
+            'certainty': self.certainty,
+            'message': self.message,
+            'raw': self.raw,
+            'timestamp': self.timestamp
+        }
 
     @classmethod
     def from_dict(cls, data: dict) -> Result:

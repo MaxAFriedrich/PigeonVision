@@ -1,5 +1,7 @@
+import time
 from abc import ABC, abstractmethod
 
+from pigeonvision.heuristics.base import cache
 from pigeonvision.heuristics.base.result import Result
 from pigeonvision.validate import QueryType
 
@@ -8,7 +10,7 @@ __ALL__ = ["Heuristic", "Result"]
 
 class Heuristic(ABC):
 
-    def __init(self, query: str, query_type: QueryType):
+    def __init__(self, query: str, query_type: QueryType):
         self.query = query
         self.query_type = query_type
         self.result = None
@@ -20,7 +22,7 @@ class Heuristic(ABC):
             self.result = self.fetch(self.query, self.query_type)
         elif not self.get_cache():
             self.result = self.fetch(self.query, self.query_type)
-        
+
         self.save_cache()
 
         return self.result
@@ -32,10 +34,22 @@ class Heuristic(ABC):
 
         :return: True if the result is cached, False otherwise.
         """
-        return False
+        res = cache.get(self.query, self.query_type.value)
+        if not isinstance(res, Result):
+            return False
+        if res.timestamp + cache.CACHE_TIMEOUT < time.time():
+            return False
+        self.result = res
+        return True
 
     def save_cache(self) -> None:
-        pass
+        """
+        Saves the current result to the cache.
+
+        :return: None
+        """
+        if self.result:
+            cache.set(self.query, self.query_type.value, self.result)
 
     @staticmethod
     @abstractmethod
@@ -46,5 +60,15 @@ class Heuristic(ABC):
         :param query: The query to be processed.
         :param query_type: The type of the query.
         :return: Result object containing the heuristic's findings.
+        """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def allowed_query_types() -> list[QueryType]:
+        """
+        Returns a list of allowed query types for this heuristic.
+
+        :return: List of QueryType enums that this heuristic supports.
         """
         pass
