@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from pigeonvision.heuristics.base.result import Result
 from pigeonvision.heuristics.base import Heuristic
 from pigeonvision.validate.utils import QueryType
+from pigeonvision.heuristics.spamhaus.spamhaus_tags import tag_messages
 
 class spamhaus(Heuristic):
 
@@ -26,7 +27,7 @@ class spamhaus(Heuristic):
 
         if spamhaus.auth_attempts > 3: raise RuntimeError("Spamhaus authentication attempt limit reached")
 
-        data = f'{{"username": "{os.environ['SPAMHAUS_USER']}", "password": "{os.environ['SPAMHAUS_PASS']}", "realm":"intel"}}'
+        data = f'{{"username": "{os.environ["SPAMHAUS_USER"]}", "password": "{os.environ["SPAMHAUS_PASS"]}", "realm":"intel"}}'
 
         res = requests.post('https://api.spamhaus.org/api/v1/login', data=data)
 
@@ -38,15 +39,36 @@ class spamhaus(Heuristic):
     @staticmethod
     def fetch_domain(query: str) -> Result:
         headers = {"Authorization": f"Bearer {spamhaus.auth_token}"}
+
+        msg = ("<p>Spamhaus provides a score for domain reputation " 
+        "where 0 is neutral, positive numbers are good and negative are bad. "
+        "We've done some curve fitting to turn this score into a confidence interval.")
         
         res = requests.get(f"https://api.spamhaus.org/api/intel/v2/byobject/domain/{query}", headers=headers)
 
-    @staticmethod
-    def fetch_IP(query: str) -> Result:
-        headers = {"Authorization": f"Bearer {spamhaus.auth_token}"}
+        print(res.text)
 
-        res = requests.get(f"https://api.spamhaus.org/api/intel/v2/byobject/domain/{query}", headers=headers)
-        pass
+        score = int(res.json()['score'])
+
+        print(res.json()['last-seen'])
+
+        print(res.json()['tags'])
+
+        for tag in res.json()['tags']:
+            if tag in tag_messages:
+                msg += tag_messages[tag]
+
+        # https://www.desmos.com/calculator/b7ju6aaz57 to understand this curve
+        normalised = (-(score / 2) / math.sqrt(25 + (score ** 2))) + 0.5
+
+        msg += '</p>'
+
+        return Result(
+                certainty = normalised,
+                raw = res.text,
+                timestamp = time.time(),
+                message = msg
+                )
 
     @staticmethod
     def fetch(query: str, query_type: QueryType) -> Result:
@@ -58,8 +80,6 @@ class spamhaus(Heuristic):
 
         elif query_type == QueryType.DOMAIN:
             return spamhaus.fetch_domain(query)
-
-        print(res)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
