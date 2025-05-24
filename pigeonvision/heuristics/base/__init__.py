@@ -1,15 +1,9 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
+from pigeonvision.heuristics.base.result import Result
 from pigeonvision.validate import QueryType
 
-
-@dataclass
-class Result:
-    is_safe: bool
-    certainty: float
-    message: str
-    raw: dict
+__ALL__ = ["Heuristic", "Result"]
 
 
 class Heuristic(ABC):
@@ -17,15 +11,24 @@ class Heuristic(ABC):
     def __init(self, query: str, query_type: QueryType):
         self.query = query
         self.query_type = query_type
-        
+        self.result = None
         self.run()
 
     def run(self, force_fetch: bool = False) -> Result:
-        pass
+        # Checking force fetch first to avoid unnecessary cache checks
+        if force_fetch:
+            self.result = self.fetch(self.query, self.query_type)
+            return self.result
+        if not self.get_cache():
+            self.result = self.fetch(self.query, self.query_type)
+            self.save_cache()
+
+        return self.result
 
     def get_cache(self) -> bool:
         """
-        Checks if the result is cached, and then writes the cached result to result.
+        Checks if the result is cached, and then writes the cached result to
+        result.
 
         :return: True if the result is cached, False otherwise.
         """
