@@ -1,4 +1,5 @@
 import time
+import dns.resolver
 
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
@@ -13,8 +14,8 @@ class dns_lookup(Heuristic):
     @staticmethod
     def fetch(query: str, query_type: QueryType):
         # Simulate fetching data
-        raise NotImplementedError(
-            "This is a test heuristic and does not implement fetch.")
+        for rdata in dns.resolver.query(query, 'CNAME'):
+            print(rdata)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:

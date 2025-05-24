@@ -11,7 +11,7 @@ CACHE_TIMEOUT = 60 * 60 * 24 * 3
 
 
 def hash_query(query: str, query_type: str) -> str:
-    inp = f"{query_type}:{query}".encode('utf-8')
+    inp = f"{query_type}:{query}".encode('utf-8') #TODO: Add heuristic to differentiate hashes
     return hashlib.sha1(inp).hexdigest()
 
 
