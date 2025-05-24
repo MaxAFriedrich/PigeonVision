@@ -1,29 +1,35 @@
-from __future__ import annotations
+from pigeonvision.validate import whitelist
+from pigeonvision.validate.detect import detect
+from pigeonvision.validate.utils import QueryType, ValidationOutcome
 
-from enum import Enum
+__ALL__ = [QueryType, ValidationOutcome]
 
 
-class QueryType(Enum):
-    MD5 = "md5"
-    SHA1 = "sha1"
-    URL = "url"
-    DOMAIN = "domain"
-    IPv4 = "ipv4"
-    IPv6 = "ipv6"
-    EMAIL = "email"
+def validate_query(query: str) -> (QueryType, ValidationOutcome, str):
+    if not query:
+        return QueryType.UNKNOWN, ValidationOutcome.INVALID, query
+    if len(query) < 3:
+        return QueryType.UNKNOWN, ValidationOutcome.INVALID, query
 
-    def __dict__(self):
-        return {
-            'name': self.name,
-            'value': self.value
-        }
+    query_type = detect(query)
+    if query_type == QueryType.UNKNOWN:
+        return QueryType.UNKNOWN, ValidationOutcome.INVALID, query
 
-    @classmethod
-    def from_dict(cls, data: dict) -> QueryType:
-        """
-        Converts a dictionary to a QueryType enum.
+    is_whitelisted = False
+    if query_type == QueryType.URL:
+        is_whitelisted = whitelist.url(query)
+    elif query_type == QueryType.DOMAIN:
+        is_whitelisted = whitelist.domain(query)
+    elif query_type == QueryType.IPv4 or query_type == QueryType.IPv6:
+        is_whitelisted = whitelist.ip(query)
+    elif query_type == QueryType.EMAIL:
+        is_whitelisted = whitelist.email(query)
+    elif query_type in [QueryType.MD5, QueryType.SHA1]:
+        is_whitelisted = whitelist.hash(query)
 
-        :param data: Dictionary containing 'name' and 'value' keys.
-        :return: Corresponding QueryType enum.
-        """
-        return cls(data['value']) if 'value' in data else cls(data['name'])
+    return (
+        query_type,
+        ValidationOutcome.WHITELIST if is_whitelisted else
+        ValidationOutcome.UNCERTAIN,
+        query
+    )
