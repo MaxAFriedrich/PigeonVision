@@ -1,4 +1,5 @@
-from pigeonvision import persistent, heuristics, validate
+from pigeonvision import persistent, heuristics, validate, redirects
+from pigeonvision.validate import QueryType
 
 persistent.load()
 
@@ -25,7 +26,10 @@ def certainty_to_estimate_word(certainty: float) -> str:
 
 
 def main(query: str) -> (str, str):
-    query_type, validation_outcome, normalised_query = validate.validate_query(query)
+    message = ""
+
+    query_type, validation_outcome, normalised_query = validate.validate_query(
+        query)
 
     if validation_outcome == validate.ValidationOutcome.INVALID:
         return "This is not a valid query.", "INVALID"
@@ -42,8 +46,25 @@ def main(query: str) -> (str, str):
             "Valid formarts are: "
             "IP address, domain name, email address, URL, MD5 or SHA1 hash.")
 
-    certainty, message = heuristics.run(query, query_type)
+    if query_type == QueryType.URL:
+        redirect_count = 0
+        final_url = ""
+        status_code = 200
+        try:
+            final_url, redirect_count, status_code = redirects.follow_redirects(
+                query)
+        except Exception as e:
+            message += (f"We could not follow redirects for this URL: "
+                        f"{str(e)}<br>")
+        if redirect_count > 0:
+            message += (
+                f"We followed {redirect_count} redirects and ended up at "
+                f"<b>{final_url}<b> with status code "
+                f"{status_code}.<br>")
+
+    certainty, heuristics_message = heuristics.run(query, query_type)
     certainty_word = certainty_to_estimate_word(certainty)
-    message = (f"<h1>We think that there is a {certainty * 100:.2f}% chance "
-               f"that the item is malicious because:</h1>") + message
+    message = ((f"<h1>We think that there is a {certainty * 100:.2f}% chance "
+                f"that the item is malicious because:</h1>") + message +
+               heuristics_message)
     return certainty_word, message
