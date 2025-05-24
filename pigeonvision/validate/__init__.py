@@ -38,3 +38,31 @@ def validate_query(query: str) -> (QueryType, ValidationOutcome, str):
         ValidationOutcome.UNCERTAIN,
         query
     )
+
+
+if __name__ == "__main__":
+    assert validate_query("https://google.com") == (
+        QueryType.URL,
+        ValidationOutcome.WHITELIST,
+        "google.com"
+    )
+    assert validate_query("google.com") == (
+        QueryType.DOMAIN,
+        ValidationOutcome.WHITELIST,
+        "google.com"
+    )
+    assert validate_query("adfjkhlkdsjahf") == (
+        QueryType.UNKNOWN,
+        ValidationOutcome.INVALID,
+        "adfjkhlkdsjahf"
+    )
+    assert validate_query("1.1.1.1") == (
+        QueryType.IPv4,
+        ValidationOutcome.WHITELIST,
+        "1.1.1.1"
+    )
+    assert validate_query("2001:0db8:85a3:0000:0000:8a2e:0370:7334") == (
+        QueryType.IPv6,
+        ValidationOutcome.UNCERTAIN,
+        "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+    )
