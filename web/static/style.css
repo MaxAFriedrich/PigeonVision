@@ -1,0 +1,100 @@
+:root {
+    --red: #c72000;
+    --green: #5ea362;
+    --highlight: #C2A3B0;
+    --grey: #56524d;
+    --background: #09090b;
+    --color: #e6dbd3;
+    --red-trans:rgba(199, 32, 0, 0.6);
+    --green-trans: rgba(94, 163, 98, 0.6);
+    --purple-trans: rgba(122, 82, 99, 0.6);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--color);
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.splash {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-image: url('/logo.svg');
+    background-size: cover;
+    background-position: top center;
+    background-blend-mode: multiply;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.splash h1 {
+    width: 100%;
+    text-align: center;
+    font-size: 4rem;
+
+}
+
+.splash p, .splash label {
+    text-align: center;
+    display: block
+}
+
+input, button {
+    background: var(--background);
+    color: var(--color);
+    border: var(--grey) 4px solid;
+    outline: none;
+    margin: 1rem;
+    font-size: 1.3rem;
+    padding: 0.5rem;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 75vw;
+}
+
+input {
+    flex: 1;
+    width: 100%;
+}
+
+button {
+    cursor: pointer;
+}
+
+#home-page > article:nth-child(2) > h1:nth-child(1) {
+    display: none;
+}
+
+article {
+    max-width: 60ch;
+    margin: 3rem;
+}
+
+a {
+    color: var(--highlight);
+}
+

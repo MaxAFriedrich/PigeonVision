@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PigeonVision</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<main id="home-page" style="display: flex">
+    <div class="splash" style="background-color: var(--purple-trans)">
+        <h1>
+            PigeonVision
+        </h1>
+        <p>
+            Analyse artefacts to determine how likely they are to be malicious.
+        </p>
+        <form id="query-input">
+            <div class="input">
+                <input type="text" id="query" name="query"
+                       placeholder="Enter an Email Address, Domain, IP Address, or File Hash">
+                <button type="submit" id="submit-query">
+                    Go
+                </button>
+            </div>
+        </form>
+
+    </div>
+    <article>
+        {{ readme_html|safe }}
+    </article>
+</main>
+<main id="loading-page">
+    <h1>
+        Loading...
+    </h1>
+    <p>
+        Please wait while we load the data and analyze it.
+    </p>
+</main>
+<main id="error-page">
+
+</main>
+<main id="results-page">
+    <div class="splash" style="background-color: var(--green-trans)">
+        <h1 id="summary">This is a very very bad domain!</h1>
+        <h2 id="query-string">google.com</h2>
+        <p>Scroll down for more information.
+        </p>
+    </div>
+    <article id="more">
+        This is some more info
+    </article>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
