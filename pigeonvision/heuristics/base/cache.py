@@ -1,10 +1,11 @@
 import hashlib
 import json
+import tempfile
 from pathlib import Path
 
 from pigeonvision.heuristics.base import Result
 
-CACHE_DIR = Path("/tmp/pigeonvision_cache")
+CACHE_DIR = Path(tempfile.gettempdir()) / 'pigeonvision_cache'
 
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
