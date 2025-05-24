@@ -15,3 +15,18 @@ Our confidence intervals and language used in our statements are as follows:
 - Between 20% and 39%: Realistic possibility
 - Between 1% and 19%: Unlikely
 - 0%: Certainly not (only in the case of presence on whitelist e.g. google.com)
+
+# Heuristics used
+
+- https://check.spamhaus.org 80% 
+- https://otx.alienvault.com/ 50%
+- virus total 95%
+- https://threatfox.abuse.ch/ 80%
+- whois 100%
+- geolocation 70%
+- safebrowsing 90%
+- blacklist checker 80%
+- dns lookup 100%
+- Team Cymru 50%
+- SPF 100%
+- DMARC 100%
