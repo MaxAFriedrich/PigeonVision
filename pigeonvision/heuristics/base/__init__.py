@@ -18,10 +18,10 @@ class Heuristic(ABC):
         # Checking force fetch first to avoid unnecessary cache checks
         if force_fetch:
             self.result = self.fetch(self.query, self.query_type)
-            return self.result
-        if not self.get_cache():
+        elif not self.get_cache():
             self.result = self.fetch(self.query, self.query_type)
-            self.save_cache()
+        
+        self.save_cache()
 
         return self.result
 
