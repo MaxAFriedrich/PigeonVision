@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
 from starlette.responses import Response
+from starlette.staticfiles import StaticFiles
 
 from pigeonvision import main
 
@@ -25,22 +26,8 @@ suffixes = {
     "webmanifest": ("application/manifest+json", "text"),
 }
 
-for file in static.glob("**/*"):
-    if file.is_file():
-        suffix = file.suffix.lstrip('.')
-        if suffix in suffixes:
-            content_type, encoding = suffixes[suffix]
-            app.mount(
-                f"/{file.relative_to(static)}",
-                Response(
-                    file.read_bytes(),
-                    media_type=content_type,
-                    headers={
-                        "Content-Encoding": encoding} if encoding == "binary"
-                    else {},
-                ),
-                name=f"static-{file.name}"
-            )
+app.mount("/static", StaticFiles(directory=static), name="static")
+
 
 templates = Environment(
     loader=FileSystemLoader(str(Path(__file__).parent / "templates")),

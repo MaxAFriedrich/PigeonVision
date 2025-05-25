@@ -1,0 +1,15 @@
+{
+  "esversion": 8,
+  "strict": "global",
+  "undef": true,
+  "unused": true,
+  "eqeqeq": true,
+  "curly": true,
+  "latedef": "nofunc",
+  "node": true,
+  "browser": true,
+  "devel": true,
+  "globals": {
+    "fetch": true
+  }
+}

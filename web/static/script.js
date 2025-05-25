@@ -1,8 +1,13 @@
+"use strict";
+
 const homePage = document.getElementById("home-page");
 const errorPage = document.getElementById("error-page");
 const loadingPage = document.getElementById("loading-page");
 const resultsPage = document.getElementById("results-page");
+const queryForm = document.getElementById("query-form");
 const queryInput = document.getElementById("query-input");
+const summary = document.getElementById("summary");
+const more = document.getElementById("more");
 
 function togglePageVisibility(page) {
     if (page.style.display === "none") {
@@ -12,9 +17,9 @@ function togglePageVisibility(page) {
     }
 }
 
-queryInput.addEventListener("submit", function (event) {
+queryForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    const query = document.getElementById("query").value;
+    const query = queryInput.value;
     if (query.trim() === "") {
         alert("Please enter a search query.");
         return;
@@ -27,19 +32,27 @@ queryInput.addEventListener("submit", function (event) {
 });
 
 function fetchResult(query) {
-    fetch(`/query`{
+    fetch(`/query`
+    {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ query: query.trim()})
+            headers
+    :
+        {
+            "Content-Type"
+        :
+            "application/json"
+        }
+    ,
+        body: JSON.stringify({query: query.trim()})
+    }
+)
+.
+    then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
         .then(data => {
             togglePageVisibility(loadingPage);
             togglePageVisibility(resultsPage);
@@ -54,8 +67,6 @@ function fetchResult(query) {
 }
 
 function displayResults(data) {
- const summary = document.getElementById("summary");
- const more = document.getElementById("more");
     summary.innerText = data.summary || "No summary available.";
     more.innerHTML = data.more ? data.more.map(item => `<p>${item}</p>`).join("") : "No additional information available.";
 }

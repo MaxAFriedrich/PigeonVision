@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>PigeonVision</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="manifest" href="/static/site.webmanifest">
+    <link rel="stylesheet" href="/static/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -19,11 +20,11 @@
         <p>
             Analyse artefacts to determine how likely they are to be malicious.
         </p>
-        <form id="query-input">
+        <form id="query-form">
             <div class="input">
-                <input type="text" id="query" name="query"
+                <input type="text" id="query-input" name="query-input"
                        placeholder="Enter an Email Address, Domain, IP Address, or File Hash">
-                <button type="submit" id="submit-query">
+                <button type="submit" id="query-submit">
                     Go
                 </button>
             </div>
@@ -56,6 +57,6 @@
         This is some more info
     </article>
 </main>
-<script src="script.js"></script>
+<script src="/static/script.js"></script>
 </body>
 </html>

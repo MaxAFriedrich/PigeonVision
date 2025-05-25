@@ -19,7 +19,7 @@ def certainty_to_estimate_word(certainty: float) -> str:
                 "malicious.")
     elif 0.01 <= certainty < 0.20:
         return "We think it is unlikely that the item is malicious."
-    elif certainty == 0.0:
+    elif 0 <= certainty < 0.01:
         return "We are certain that the item is not malicious."
     else:
         raise ValueError(f"Unknown certainty value: {certainty}")

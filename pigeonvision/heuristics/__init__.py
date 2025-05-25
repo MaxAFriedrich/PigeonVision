@@ -39,7 +39,7 @@ def add_imports(array) -> list:
         module = importlib.import_module(
             'pigeonvision.heuristics.' + heuristic_name)
         heuristic = getattr(module, heuristic_name)
-        array.append(heuristic)
+        array[i].append(heuristic)
     return array
 
 
@@ -52,7 +52,11 @@ def mean_certainty(
         reliability: list[float],
         trustworthiness: list[float]
 ) -> float:
-    return sum(reliability) / sum(trustworthiness)
+    total_reliability = sum(reliability)
+    total_trustworthiness = sum(trustworthiness)
+    if total_trustworthiness == 0 or total_reliability == 0:
+        return 0.0
+    return total_reliability / total_trustworthiness
 
 
 def calculate_reliability(certainty: float, trustworthiness: float) -> float:
@@ -73,6 +77,7 @@ def have_enough_data(
             high_certainty_count += 1
     if high_certainty_count > 3:
         return True
+    return False
 
 
 def run_heuristic_list(
@@ -88,29 +93,34 @@ def run_heuristic_list(
 
         if have_enough_data(reliabilities, trustworthiness):
             return reliabilities, trustworthiness, messages
-        if query_type not in heuristic.allowed_query_types():
+        try:
+            if query_type not in heuristic.allowed_query_types():
+                continue
+        except NotImplementedError:
             continue
 
         try:
             heuristic_instance: Heuristic = heuristic(query, query_type)
         except Exception as e:
-            messages.append(f"{heuristic_name} failed: {str(e)}")
+            messages.append(f"<p>{heuristic_name} failed: {str(e)}</p>")
             continue
 
         result = heuristic_instance.result
         if not isinstance(result, Result):
             messages.append(f"{heuristic_name} did not return a valid result.")
             continue
-
+        print(
+            f"Running heuristic: {heuristic_name} with trustworthiness "
+            f"{trustworthiness_value}, with result: {result.certainty}")
         messages.append(result.message)
 
-        if result.certainty == -1: continue
+        if result.certainty == -1:
+            continue
 
         reliability = calculate_reliability(result.certainty,
                                             trustworthiness_value)
         reliabilities.append(reliability)
         trustworthiness.append(trustworthiness_value)
-        
 
     return reliabilities, trustworthiness, messages
 
