@@ -1,5 +1,6 @@
 import logging
 import logging.config
+import time
 
 from pigeonvision import persistent, heuristics, validate, redirects
 from pigeonvision.validate import QueryType
@@ -50,6 +51,9 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
     if not verbose: logging.basicConfig(filename=persistent.LOCAL_APP_DATA)
 
     logger.debug("Starting pigeon vision")
+
+    with open(str(persistent.LOCAL_APP_DATA) + '\\queries', 'a') as f:
+        f.writelines(f"{int(time.time())}: {query}\n")
 
     query_type, validation_outcome, normalised_query = validate.validate_query(
         query)
