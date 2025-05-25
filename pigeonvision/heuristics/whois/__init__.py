@@ -1,9 +1,9 @@
+import logging
 import math
 import time
-import logging
-import requests
-
 from datetime import datetime
+
+import requests
 from bs4 import BeautifulSoup
 
 from pigeonvision.heuristics import Result
@@ -12,7 +12,6 @@ from pigeonvision.validate import QueryType
 
 
 class whois(Heuristic):
-
     logger = logging.getLogger(__name__)
 
     def __init__(self, query: str, query_type: QueryType):
@@ -71,7 +70,6 @@ class whois(Heuristic):
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
-
         whois.logger.info("Starting whois heuristic")
 
         date_format = "%Y-%m-%d"
@@ -83,16 +81,30 @@ class whois(Heuristic):
 
         for div in data.find_all("div", {"class": "df-row"}):
             whois_data[div.contents[0].text] = div.contents[1].text
-            whois.logger.debug("Parsed out %s : %s", div.contents[0].text, div.contents[1].text)
+            whois.logger.debug("Parsed out %s : %s", div.contents[0].text,
+                               div.contents[1].text)
 
+        registered_on = whois_data.get('Registered On:')
+        updated_on = whois_data.get('Updated On:')
+        if not registered_on or not updated_on:
+            whois.logger.debug(
+                f"Could not find registration dates in whois data for {query}")
+            return Result(
+                certainty=-1,
+                raw=whois_data,
+                timestamp=time.time(),
+                message="<p>Could not find registration dates in whois "
+                        "data.</p>"
+            )
         time_since_reg = datetime.now() - datetime.strptime(
-            whois_data['Registered On:'], date_format)
-        if time_since_reg.days > 5000: return Result(
-            certainty=-1,
-            raw=whois_data,
-            timestamp=time.time(),
-            message=whois.build_html(whois_data)
-        )
+            registered_on, date_format)
+        if time_since_reg.days > 5000:
+            return Result(
+                certainty=-1,
+                raw=whois_data,
+                timestamp=time.time(),
+                message=whois.build_html(whois_data)
+            )
 
         time_to_exp = datetime.strptime(whois_data['Expires On:'],
                                         date_format) - datetime.now()
