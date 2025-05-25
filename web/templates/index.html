@@ -20,11 +20,6 @@
         <p>
             Analyse artefacts to determine how likely they are to be malicious.
         </p>
-        <p style="max-width: 75vw;">
-            <b>WARNING: this tool queries third-party services and WILL expose your data to them.
-                DO NOT use this tool with sensitive data or data you do not want to share.
-            </b>
-        </p>
         <form id="query-form">
             <div class="input">
                 <input type="text" id="query-input" name="query-input"
@@ -35,6 +30,14 @@
             </div>
         </form>
 
+        <p style="max-width: 75vw;">
+            <b>WARNING: this tool queries third-party services and WILL expose your query to them.
+                DO NOT use this tool with sensitive information or data you do not want to share.
+                <br>
+                The information and analysis provided may be inaccurate or incomplete, do not rely on it for critical
+                decisions.
+            </b>
+        </p>
     </div>
     <article>
         {{ readme_html|safe }}
