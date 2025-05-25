@@ -36,20 +36,24 @@
     </article>
 </main>
 <main id="loading-page">
-    <h1>
-        Loading...
-    </h1>
-    <p>
-        Please wait while we load the data and analyze it.
-    </p>
+    <div class="splash">
+        <h1>Loading</h1>
+        <p>
+            Please wait while we load the data and analyze it.
+        </p>
+    </div>
 </main>
 <main id="error-page">
-
+    <div class="splash" style="background-color: var(--red-trans)">
+        <a class="reset" href="/">← Fly home</a>
+        <p id="error-message">Some error message</p>
+    </div>
 </main>
 <main id="results-page">
-    <div class="splash" style="background-color: var(--green-trans)">
-        <h1 id="summary">This is a very very bad domain!</h1>
-        <h2 id="query-string">google.com</h2>
+    <div class="splash" id="results-splash">
+        <a class="reset" href="/">← Fly home</a>
+        <h1 id="summary">summary</h1>
+        <h2 id="query-string">query</h2>
         <p>Scroll down for more information.
         </p>
     </div>

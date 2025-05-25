@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
-from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
 from pigeonvision import main
@@ -27,7 +26,6 @@ suffixes = {
 }
 
 app.mount("/static", StaticFiles(directory=static), name="static")
-
 
 templates = Environment(
     loader=FileSystemLoader(str(Path(__file__).parent / "templates")),
@@ -54,5 +52,6 @@ class QueryRequest(BaseModel):
 
 @app.post("/query")
 async def query_endpoint(request: QueryRequest):
-    certainty_word, message = main(request.query)
-    return {"ok": True, "summary": certainty_word, "more": message}
+    certainty_word, message, certainty = main(request.query)
+    return {"ok": True, "summary": certainty_word, "more": message,
+            "certainty": certainty}

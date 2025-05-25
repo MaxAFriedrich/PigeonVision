@@ -8,6 +8,7 @@
     --red-trans:rgba(199, 32, 0, 0.6);
     --green-trans: rgba(94, 163, 98, 0.6);
     --purple-trans: rgba(122, 82, 99, 0.6);
+    --grey-trans: rgba(86, 82, 77, 0.6);
 }
 
 body {
@@ -48,8 +49,11 @@ main {
 .splash h1 {
     width: 100%;
     text-align: center;
-    font-size: 4rem;
+    font-size: min(10vw, 4rem);
+}
 
+.splash h2{
+    font-size: min(7vw, 1.5rem);
 }
 
 .splash p, .splash label {
@@ -65,6 +69,17 @@ input, button {
     margin: 1rem;
     font-size: 1.3rem;
     padding: 0.5rem;
+}
+
+.reset {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--background);
+    color: var(--color);
+    border: var(--grey) 4px solid;
+    padding: 0.5rem;
+    text-decoration: none;
 }
 
 .input {
@@ -98,3 +113,56 @@ a {
     color: var(--highlight);
 }
 
+#loading-page .splash{
+    animation: pulse 2s infinite linear;
+}
+
+#loading-page h1::after {
+    content: '';
+    animation: loadingDots 2s infinite steps(5, end);
+    display: inline-block;
+    text-align: left;
+    width: 2ch;
+}
+
+@keyframes loadingDots {
+    0% {
+        content: '';
+    }
+    20% {
+        content: '.';
+    }
+    40% {
+        content: '..';
+    }
+    60% {
+        content: '...';
+    }
+    80% {
+        content: '';
+    }
+}
+
+@keyframes pulse {
+    0%{
+        background-color: var(--grey);
+    }
+    50%{
+        background-color: var(--grey-trans);
+    }
+    100%{
+        background-color: var(--grey);
+    }
+}
+
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid var(--grey);
+}
