@@ -52,7 +52,7 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
 
     logger.debug("Starting pigeon vision")
 
-    with open(str(persistent.LOCAL_APP_DATA) + '\\queries', 'a') as f:
+    with open(persistent.LOCAL_APP_DATA / 'queries', 'a') as f:
         f.writelines(f"{int(time.time())}: {query}\n")
 
     query_type, validation_outcome, normalised_query = validate.validate_query(
@@ -74,7 +74,8 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         return (
             "This query is in an unknown format.",
             "Valid formarts are: "
-            "IP address, domain name, email address, URL, MD5 or SHA1 hash.", 0.5)
+            "IP address, domain name, email address, URL, MD5 or SHA1 hash.",
+            0.5)
 
     if query_type == QueryType.URL:
         redirect_count = 0
