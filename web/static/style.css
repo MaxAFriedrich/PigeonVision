@@ -166,3 +166,9 @@ td, th {
     text-align: center;
     border: 1px solid var(--grey);
 }
+
+td {
+    text-wrap: wrap;
+    max-width: 40%;
+    word-wrap: anywhere;
+}
