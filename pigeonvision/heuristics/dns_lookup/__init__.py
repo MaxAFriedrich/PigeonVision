@@ -6,6 +6,7 @@ import requests
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
 from pigeonvision.validate import QueryType
+from pigeonvision.validate.utils import extract
 
 
 class dns_lookup(Heuristic):
@@ -33,11 +34,11 @@ class dns_lookup(Heuristic):
         for test, endpoint, expected in dns_lookup.email_endpoints:
             res = requests.get(endpoint + query)
 
-            msg += res.json()['summary']['title'] + '<br><br>'
+            msg += test + ': ' + res.json()['summary']['title'] + '<br><br>'
 
             if res.json()['summary']['title'] != expected: 
-                if test == 'SPF': base_good += 0.2
-                else: base_good += 0.1
+                if test == 'SPF': base_good += 0.4
+                else: base_good += 0.2
 
             print(f"{test} resulted in {res.json()['summary']['title']}")
 
@@ -58,7 +59,7 @@ class dns_lookup(Heuristic):
 
             try:
                 for rdata in dns.resolver.query(query, record):
-                    records.append(rdata)
+                    records.append(str(rdata))
             except dns.resolver.NoAnswer as e:
                 dns_lookup.logger.debug("%s record not found", record)
                 continue
@@ -72,7 +73,7 @@ class dns_lookup(Heuristic):
             email_confidence, email_msg = dns_lookup.email(query)
 
             msg += email_msg
-            msg += f"Based on the above, we gave the email a malicious confidence of {email_confidence}"
+            msg += f"Based on the above, we gave the email a malicious confidence of {email_confidence} <br><br>"
 
             
         else:
@@ -88,6 +89,8 @@ class dns_lookup(Heuristic):
                 f'<tr><td>{key}</td><td>'
                 f'{results[key]}</td>')
 
+        msg += '</table>'
+
         return Result(
                 certainty=email_confidence,
                 raw=results,
@@ -96,6 +99,4 @@ class dns_lookup(Heuristic):
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
-        raise NotImplementedError(
-            "This is a test heuristic and does not implement "
-            "allowed_query_types.")
+        return [QueryType.EMAIL, QueryType.DOMAIN, QueryType.URL]

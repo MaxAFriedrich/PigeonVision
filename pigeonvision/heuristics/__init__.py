@@ -8,11 +8,11 @@ from pigeonvision.validate.utils import QueryType
 class AllHeuristics:
     # These have more than 3000 queries per month
     always = [
-        ['whois', 1],
-        ['dns_lookup', 1],
-        ['geolocation', 0.7],
         ['spamhaus', 0.8],
         ['virus_total', 0.95],
+        ['dns_lookup', 0.4],
+        ['geolocation', 0.7],
+        ['whois', 1],
         ['hybrid_analysis', 0.9],
         ['threatfox', 0.8],
         ['safe_browsing', 0.9],
