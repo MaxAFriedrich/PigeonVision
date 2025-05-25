@@ -34,8 +34,6 @@ class dns_lookup(Heuristic):
         for test, endpoint, expected in dns_lookup.email_endpoints:
             res = requests.get(endpoint + query)
 
-            msg += test + ': ' + res.json()['summary']['title'] + '<br><br>'
-
             if res.json()['summary']['title'] != expected: 
                 if test == 'SPF': base_good += 0.4
                 else: base_good += 0.2

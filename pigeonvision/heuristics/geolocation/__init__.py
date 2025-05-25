@@ -25,6 +25,8 @@ class geolocation(Heuristic):
         #  "lon": -73.5493, "timezone": "America/Toronto",
         #  "isp": "Le Groupe Videotron Ltee", "org": "Videotron Ltee",
         #  "as": "AS5769 Videotron Ltee", "query": "24.48.0.1"}
+        geolocation.logger.debug("Starting geolocation")
+
         if query_type == QueryType.URL:
             query = extract_domain(query)
             geolocation.logger.debug(
