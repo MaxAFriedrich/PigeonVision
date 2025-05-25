@@ -16,4 +16,8 @@ def load():
 
     LOCAL_APP_DATA.mkdir(parents=True, exist_ok=True)
     LOCAL_CACHE.mkdir(parents=True, exist_ok=True)
+
+    logger.info("Local app data loaded as: %s", LOCAL_APP_DATA)
+    logger.info("Local cache loaded as: %s", LOCAL_CACHE)
+
     load_dotenv(Path(__file__).parent.parent / '.env')

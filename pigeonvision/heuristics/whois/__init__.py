@@ -1,8 +1,9 @@
 import math
 import time
-from datetime import datetime
-
+import logging
 import requests
+
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 from pigeonvision.heuristics import Result
@@ -11,6 +12,8 @@ from pigeonvision.validate import QueryType
 
 
 class whois(Heuristic):
+
+    logger = logging.getLogger(__name__)
 
     def __init__(self, query: str, query_type: QueryType):
         super().__init__(query, query_type)
@@ -68,21 +71,19 @@ class whois(Heuristic):
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
-        # Simulate fetching data
-        params = {
-            'domain': query,
-        }
+
+        whois.logger.info("Starting whois heuristic")
 
         date_format = "%Y-%m-%d"
 
-        res = requests.get(f'https://www.whois.com/whois/{query}',
-                           params=params)
+        res = requests.get(f'https://www.whois.com/whois/{query}')
         whois_data = {}
 
         data = BeautifulSoup(res.text, 'html.parser').main
 
         for div in data.find_all("div", {"class": "df-row"}):
             whois_data[div.contents[0].text] = div.contents[1].text
+            whois.logger.debug("Parsed out %s : %s", div.contents[0].text, div.contents[1].text)
 
         time_since_reg = datetime.now() - datetime.strptime(
             whois_data['Registered On:'], date_format)

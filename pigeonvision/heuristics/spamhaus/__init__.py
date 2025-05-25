@@ -51,7 +51,7 @@ class spamhaus(Heuristic):
         msg = ("<h2>Spamhaus</h2>"
         "<p>Spamhaus provides a score for domain reputation " 
         "where 0 is neutral, positive numbers are good and negative are bad. "
-        "We've done some curve fitting to turn this score into a confidence interval.")
+        "We've done some curve fitting to turn this score into a confidence interval. <br><br>")
 
         res = requests.get(f"https://api.spamhaus.org/api/intel/v2/byobject/domain/{query}", headers=headers)
 
@@ -63,12 +63,12 @@ class spamhaus(Heuristic):
         spamhaus.logger.debug("Normalised percentage: %i", normalised)
 
         msg += (f"Spamhaus give this a score of {score}, which we've turned "
-                f"into a malicious confidence value of {normalised}")
+                "into a malicious confidence value of {:.2f}<br><br>".format(normalised))
 
         for tag in res.json().get('tags', []):
             spamhaus.logger.debug("Found tag %s", tag)
             if tag in tag_messages:
-                msg += tag_messages[tag]
+                msg += (tag_messages[tag]) + '<br>'
 
         msg += '</p>'
 

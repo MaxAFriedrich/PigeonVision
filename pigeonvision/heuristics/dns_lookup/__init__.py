@@ -1,6 +1,7 @@
 import time
 import dns.resolver
 import logging
+import requests
 
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
@@ -14,12 +15,33 @@ class dns_lookup(Heuristic):
 
     logger = logging.getLogger(__name__)
 
+    email_endpoints = [('DMARC', 'https://scan.emailsecuritycheck.service.ncsc.gov.uk/dmarc/', 'This domain has a strong DMARC policy in place'),
+                        ('SPF', 'https://scan.emailsecuritycheck.service.ncsc.gov.uk/spf/', 'We did not detect any issues with your SPF record'),
+                        ('TLS', 'https://scan.emailsecuritycheck.service.ncsc.gov.uk/tls/', 'No issues found with the TLS configuration'),
+                        ('MTASTS', 'https://scan.emailsecuritycheck.service.ncsc.gov.uk/mtasts/', 'Privacy of emails to this domain is protected from downgrade attacks')]
+
     def __init__(self, query: str, query_type: QueryType):
         super().__init__(query, query_type)
 
     @staticmethod
-    def email(query: str):
-        pass #TODO: ABUSE NCSC
+    def email(query: str) -> (float, str):
+
+        base_good = 0
+
+        msg = ''
+
+        for test, endpoint, expected in dns_lookup.email_endpoints:
+            res = requests.get(endpoint + query)
+
+            msg += res.json()['summary']['title'] + '<br><br>'
+
+            if res.json()['summary']['title'] != expected: 
+                if test == 'SPF': base_good += 0.2
+                else: base_good += 0.1
+
+            print(f"{test} resulted in {res.json()['summary']['title']}")
+
+        return (base_good, msg)
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
@@ -28,15 +50,49 @@ class dns_lookup(Heuristic):
 
         results = {}
 
-        for record in dns_lookup.dns_record_types:
+        email_confidence = -1
 
-            dns_lookup.logger.debug("Querying %s record")
+        for record in dns_lookup.dns_record_types:
+            dns_lookup.logger.debug("Querying %s record", record)
             records = []
 
-            for rdata in dns.resolver.query(query, record):
-                records += rdata
+            try:
+                for rdata in dns.resolver.query(query, record):
+                    records.append(rdata)
+            except dns.resolver.NoAnswer as e:
+                dns_lookup.logger.debug("%s record not found", record)
+                continue
+            if records != []: results[record] = records
 
-            results[record] = records
+        if 'MX' in results or query_type == QueryType.EMAIL:
+            msg = ("<h2> DNS and email </h2> We checked the email records for this domain"
+                " and checked for records that suggest email is properly set up."
+                " It's often not a huge deal if they aren't, but it does indicate that "
+                "something is up.<br><br>")
+            email_confidence, email_msg = dns_lookup.email(query)
+
+            msg += email_msg
+            msg += f"Based on the above, we gave the email a malicious confidence of {email_confidence}"
+
+            
+        else:
+            msg = '<h2> DNS </h2>'
+
+        msg += "Below are the DNS records found on this domain<br><br>"
+        msg += '<table class="dns-table">'
+        msg += '<tr><th>Field</th><th>Value</th></tr>'
+
+        for key in results:
+
+            msg += (
+                f'<tr><td>{key}</td><td>'
+                f'{results[key]}</td>')
+
+        return Result(
+                certainty=email_confidence,
+                raw=results,
+                timestamp=time.time(),
+                message=msg)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
