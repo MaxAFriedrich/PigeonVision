@@ -34,7 +34,8 @@ class Heuristic(ABC):
 
         :return: True if the result is cached, False otherwise.
         """
-        res = cache.get(self.query, self.query_type.value)
+        heuristic_name = self.__class__.__name__
+        res = cache.get(self.query, self.query_type.value, heuristic_name)
         if not isinstance(res, Result):
             return False
         if res.timestamp + cache.CACHE_TIMEOUT < time.time():
@@ -49,7 +50,11 @@ class Heuristic(ABC):
         :return: None
         """
         if self.result:
-            cache.set(self.query, self.query_type.value, self.result)
+            heuristic_name = self.__class__.__name__
+            cache.set(self.query, self.query_type.value, heuristic_name,
+                      self.result)
+        else:
+            raise ValueError("Result is not set. Cannot save to cache.")
 
     @staticmethod
     @abstractmethod
