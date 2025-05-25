@@ -35,7 +35,7 @@ def certainty_to_estimate_word(certainty: float, query_type: QueryType) -> str:
         raise ValueError(f"Unknown certainty value: {certainty}")
 
 
-def main(query: str, verbose: bool = False, level: str = "INFO") -> (
+def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         str, str, float):
     message = ""
 
@@ -58,7 +58,7 @@ def main(query: str, verbose: bool = False, level: str = "INFO") -> (
                 query_type, validation_outcome, normalised_query)
 
     if validation_outcome == validate.ValidationOutcome.INVALID:
-        return "This is not a valid query.", "INVALID", 0.0
+        return "This is not a valid query.", "INVALID", 0.5
     elif validation_outcome == validate.ValidationOutcome.WHITELIST:
         return ("This domain is certainly not malicious.",
                 "The item you queried is whitelisted and therefore we do not "
@@ -70,7 +70,7 @@ def main(query: str, verbose: bool = False, level: str = "INFO") -> (
         return (
             "This query is in an unknown format.",
             "Valid formarts are: "
-            "IP address, domain name, email address, URL, MD5 or SHA1 hash.", 0.0)
+            "IP address, domain name, email address, URL, MD5 or SHA1 hash.", 0.5)
 
     if query_type == QueryType.URL:
         redirect_count = 0

@@ -2,6 +2,7 @@ import requests
 import os
 import time
 import math
+import logging
 
 from dotenv import load_dotenv
 
@@ -15,11 +16,15 @@ class spamhaus(Heuristic):
     auth_token = ''
     auth_attempts = 0
 
+    logger = logging.getLogger(__name__)
+
     def __init__(self, query: str, query_type: QueryType):
         super().__init__(query, query_type)
 
     @staticmethod
     def acquire_auth():
+
+        spamhaus.logger.debug("Populating spamhaus authentication token")
 
         load_dotenv()
 
@@ -33,6 +38,7 @@ class spamhaus(Heuristic):
 
         if res.status_code == 200:
             
+            spamhaus.logger.debug("Spamhaus authentication successful in %i attempts", spamhaus.auth_attempts)
             spamhaus.auth_attempts = 0
             spamhaus.auth_token = res.json()["token"]
 
@@ -40,26 +46,29 @@ class spamhaus(Heuristic):
     def fetch_domain(query: str) -> Result:
         headers = {"Authorization": f"Bearer {spamhaus.auth_token}"}
 
-        msg = ("<p>Spamhaus provides a score for domain reputation " 
+        spamhaus.logger.debug("Querying https://api.spamhaus.org/api/intel/v2/byobject/domain/%s", query)
+
+        msg = ("<h2>Spamhaus</h2>"
+        "<p>Spamhaus provides a score for domain reputation " 
         "where 0 is neutral, positive numbers are good and negative are bad. "
         "We've done some curve fitting to turn this score into a confidence interval.")
         
         res = requests.get(f"https://api.spamhaus.org/api/intel/v2/byobject/domain/{query}", headers=headers)
 
-        print(res.text)
-
-        score = int(res.json()['score'])
-
-        print(res.json()['last-seen'])
-
-        print(res.json()['tags'])
-
-        for tag in res.json()['tags']:
-            if tag in tag_messages:
-                msg += tag_messages[tag]
+        score = int(res.json().get('score', 0))
+        spamhaus.logger.debug("Spamhaus score: %i", score)
 
         # https://www.desmos.com/calculator/b7ju6aaz57 to understand this curve
         normalised = (-(score / 2) / math.sqrt(25 + (score ** 2))) + 0.5
+        spamhaus.logger.debug("Normalised percentage: %i", normalised)
+
+        msg += (f"Spamhaus give this a score of {score}, which we've turned "
+                f"into a malicious confidence value of {normalised}")
+
+        for tag in res.json().get('tags', []):
+            spamhaus.logger.debug("Found tag %s", tag)
+            if tag in tag_messages:
+                msg += tag_messages[tag]
 
         msg += '</p>'
 
@@ -73,13 +82,11 @@ class spamhaus(Heuristic):
     @staticmethod
     def fetch(query: str, query_type: QueryType) -> Result:
 
-        if spamhaus.auth_token == '': spamhaus.acquire_auth()
-        
-        if query_type == QueryType.IPv4 or query_type == QueryType.IPv6:
-            return spamhaus.fetch_IP(query)
+        spamhaus.logger.info("Starting spamhaus heuristic")
 
-        elif query_type == QueryType.DOMAIN:
-            return spamhaus.fetch_domain(query)
+        if spamhaus.auth_token == '': spamhaus.acquire_auth()
+
+        spamhaus.fetch_domain(query)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
