@@ -1,4 +1,3 @@
-import base64
 import logging
 import os
 import time
@@ -9,6 +8,7 @@ import requests
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
 from pigeonvision.validate import QueryType
+from pigeonvision.validate.utils import extract_domain
 
 
 class virus_total(Heuristic):
@@ -84,36 +84,6 @@ class virus_total(Heuristic):
             raise e
 
     @staticmethod
-    def url(query: str) -> Result:
-        url = "https://www.virustotal.com/api/v3/urls"
-        response = requests.post(url, headers=virus_total.headers, data={
-            "url": query
-        })
-        response.raise_for_status()
-        virus_total.logger.info(f"URL submitted to VirusTotal: {query}")
-        b64_query = base64.b64encode(query.encode()).decode()
-        url = f"https://www.virustotal.com/api/v3/urls/{b64_query}"
-        for i in [0.1, 5]:
-            time.sleep(i)
-            try:
-                virus_total.logger.debug(
-                    f"Fetching VirusTotal data for URL {query} with b64 query "
-                    f"{b64_query}")
-                return virus_total.fetch_query(b64_query, QueryType.URL, url)
-            except requests.HTTPError as e:
-                if e.response.status_code != 404:
-                    raise e
-        return Result(
-            certainty=-1,
-            message=f"<h2>VirusTotal Error</h2><p>VirusTotal does not "
-                    f"know about this URL, if it is not confidential, you "
-                    f"may wish to upload it yourself. We did try to upload "
-                    f"it, but they did not have the results in time.</p>",
-            raw={},
-            timestamp=time.time()
-        )
-
-    @staticmethod
     def fetch(query: str, query_type: QueryType):
         virus_total.logger.info(
             f"Starting VirusTotal heuristic for {query} of type {query_type}")
@@ -127,8 +97,12 @@ class virus_total(Heuristic):
                 "VIRUSTOTAL_API_KEY environment variable is not set.")
         if query_type == QueryType.MD5 or query_type == QueryType.SHA1:
             return virus_total.file(query, query_type)
-        if query_type == QueryType.URL:
-            return virus_total.url(query)
+        if query_type in [QueryType.URL, QueryType.EMAIL]:
+            query = extract_domain(query)
+            virus_total.logger.debug(
+                f"Fetching VirusTotal data for domain {query}")
+            url = f"https://www.virustotal.com/api/v3/domains/{query}"
+            return virus_total.fetch_query(query, query_type, url)
         if query_type in [QueryType.IPv4, QueryType.IPv6]:
             virus_total.logger.debug(
                 f"Fetching VirusTotal data for IP address {query}")
@@ -143,7 +117,8 @@ class virus_total(Heuristic):
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
         return [QueryType.MD5, QueryType.SHA1,
-                QueryType.IPv4, QueryType.IPv6, QueryType.DOMAIN]
+                QueryType.IPv4, QueryType.IPv6, QueryType.DOMAIN,
+                QueryType.EMAIL]
 
 
 if __name__ == "__main__":
