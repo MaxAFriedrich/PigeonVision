@@ -15,7 +15,7 @@ def certainty_to_estimate_word(certainty: float, query_type: QueryType) -> str:
         return (f"We are almost certain that the {query_type.value} is "
                 f"malicious.")
     elif 0.60 <= certainty < 0.87:
-        return (f"We think it is probable that the {query_type.value} is "
+        return (f"We think the {query_type.value} is probably "
                 f"malicious.")
     elif 0.40 <= certainty < 0.60:
         return (
@@ -88,8 +88,7 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
                           redirect_count, status_code)
         except Exception as e:
             logging.error("Redirects for %s failed", query)
-            message += (f"We could not follow redirects for this URL: "
-                        f"{str(e)}<br>")
+            
         if redirect_count > 0:
             logging.info("Redirects followed, renormalising final URL %s",
                          final_url)

@@ -110,7 +110,6 @@ def run_heuristic_list(
         except Exception as e:
             AllHeuristics.logger.error(
                 f"Error initializing heuristic {heuristic_name}: {str(e)}")
-            messages.append(f"<p>{heuristic_name} failed: {str(e)}</p>")
             continue
 
         result = heuristic_instance.result
