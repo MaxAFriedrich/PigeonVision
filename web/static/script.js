@@ -14,6 +14,7 @@ const resultsSplash = document.getElementById("results-splash");
 
 window.onload = function () {
     queryForm.reset();
+    window.scrollTo(0, 0);
 };
 
 function togglePageVisibility(page) {

@@ -37,7 +37,7 @@ class spamhaus(Heuristic):
         res = requests.post('https://api.spamhaus.org/api/v1/login', data=data)
 
         if res.status_code == 200:
-            
+
             spamhaus.logger.debug("Spamhaus authentication successful in %i attempts", spamhaus.auth_attempts)
             spamhaus.auth_attempts = 0
             spamhaus.auth_token = res.json()["token"]
@@ -52,7 +52,7 @@ class spamhaus(Heuristic):
         "<p>Spamhaus provides a score for domain reputation " 
         "where 0 is neutral, positive numbers are good and negative are bad. "
         "We've done some curve fitting to turn this score into a confidence interval.")
-        
+
         res = requests.get(f"https://api.spamhaus.org/api/intel/v2/byobject/domain/{query}", headers=headers)
 
         score = int(res.json().get('score', 0))
@@ -86,7 +86,7 @@ class spamhaus(Heuristic):
 
         if spamhaus.auth_token == '': spamhaus.acquire_auth()
 
-        spamhaus.fetch_domain(query)
+        return spamhaus.fetch_domain(query)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
