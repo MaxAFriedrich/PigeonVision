@@ -1,4 +1,5 @@
 import requests
+import logging
 
 
 def follow_redirects(url) -> (str, int, int):
@@ -6,7 +7,8 @@ def follow_redirects(url) -> (str, int, int):
     :param url: The URL to follow redirects for.
     :return: final url, number of redirects, status code
     """
-
+    logger = logging.getLogger(__name__)
+    logger.debug("Following redirects for %s", url)
     session = requests.Session()
 
     response = session.get(url, allow_redirects=True)

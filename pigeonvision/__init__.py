@@ -1,3 +1,6 @@
+import logging
+import logging.config
+
 from pigeonvision import persistent, heuristics, validate, redirects
 from pigeonvision.validate import QueryType
 
@@ -6,30 +9,44 @@ persistent.load()
 
 def certainty_to_estimate_word(certainty: float) -> str:
     if certainty == 1.0:
-        return "We are certain that the item is malicious."
+        return f"We are certain that the {query_type.value} is malicious."
     elif 0.87 <= certainty < 1.0:
-        return "We are almost certain that the item is malicious."
+        return f"We are almost certain that the {query_type.value} is malicious."
     elif 0.60 <= certainty < 0.87:
-        return "We think it is probable that the item is malicious."
+        return f"We think it is probable that the {query_type.value} is malicious."
     elif 0.40 <= certainty < 0.60:
-        return ("We think chances are about even as to whether the item is "
+        return (f"We think chances are about even as to whether the {query_type.value} is "
                 "malicious or not.")
     elif 0.20 <= certainty < 0.40:
-        return ("We think there is a realistic possibility that the item is "
+        return (f"We think there is a realistic, but low possibility that the {query_type.value} is "
                 "malicious.")
     elif 0.01 <= certainty < 0.20:
-        return "We think it is unlikely that the item is malicious."
+        return f"We think it is unlikely that the {query_type.value} is malicious."
     elif 0 <= certainty < 0.01:
-        return "We are certain that the item is not malicious."
+        return f"We are certain that the {query_type.value} is not malicious."
     else:
         raise ValueError(f"Unknown certainty value: {certainty}")
 
 
-def main(query: str) -> (str, str):
+def main(query: str, verbose: bool, level: str) -> (str, str, float):
     message = ""
+
+    logger = logging.getLogger(__name__)
+    log_level = getattr(logging, level.upper())
+
+    logging.basicConfig(encoding='utf-8', 
+                        level=log_level, 
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    if not verbose: logging.basicConfig(filename=persistent.LOCAL_APP_DATA)
+
+    logger.debug("Starting pigeon vision")
 
     query_type, validation_outcome, normalised_query = validate.validate_query(
         query)
+
+    logger.info("QueryType: %s Validation outcome: %s Normalised query: %s", 
+                query_type, validation_outcome, normalised_query)
 
     if validation_outcome == validate.ValidationOutcome.INVALID:
         return "This is not a valid query.", "INVALID"
@@ -53,18 +70,26 @@ def main(query: str) -> (str, str):
         try:
             final_url, redirect_count, status_code = redirects.follow_redirects(
                 query)
+            logging.debug("Redirect results: %s %s %s", final_url, redirect_count, status_code)
         except Exception as e:
+            logging.error("Redirects for %s failed", query)
             message += (f"We could not follow redirects for this URL: "
                         f"{str(e)}<br>")
         if redirect_count > 0:
+            logging.info("Redirects followed, renormalising final URL %s", final_url)
+            normalised_query = validate.normalise.url(final_url)
+            logging.debug("Normalised query now %s", normalised_query)
             message += (
                 f"We followed {redirect_count} redirects and ended up at "
                 f"<b>{final_url}<b> with status code "
                 f"{status_code}.<br>")
 
-    certainty, heuristics_message = heuristics.run(query, query_type)
+    logging.debug("Running heuristics on %s")
+    certainty, heuristics_message = heuristics.run(normalised_query, query_type)
+    logging.info("Heuristics certainty: %f Message: %s", certainty, heuristics_message)
     certainty_word = certainty_to_estimate_word(certainty)
     message = ((f"<h1>We think that there is a {certainty * 100:.2f}% chance "
                 f"that the item is malicious because:</h1>") + message +
                heuristics_message)
-    return certainty_word, message
+    logging.debug("Execution complete")
+    return certainty_word, message, certainty
