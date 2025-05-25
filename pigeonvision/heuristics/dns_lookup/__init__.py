@@ -15,7 +15,8 @@ class dns_lookup(Heuristic):
         super().__init__(query, query_type)
 
     @staticmethod
-    def 
+    def email(query: str):
+        pass #TODO: ABUSE NCSC
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
