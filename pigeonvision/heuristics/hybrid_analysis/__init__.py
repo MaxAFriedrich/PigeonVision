@@ -1,4 +1,8 @@
 import time
+import requests
+import os
+
+from dotenv import load_dotenv
 
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
@@ -12,12 +16,34 @@ class hybrid_analysis(Heuristic):
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
-        # Simulate fetching data
-        raise NotImplementedError(
-            "This is a test heuristic and does not implement fetch.")
+
+        load_dotenv()
+
+        msg = ("<h2>Hybrid Analysis</h2>Hybrid Analysis is a tool that uses CrowdStrike's sandbox "
+            "to determine if something is malicious.<br><br> They come up with a threat "
+            "score out of 100 with each query, which we translate into a percentage score from HA.")
+
+        headers = {
+            'api-key': os.environ["HYBRID_KEY"]
+        }
+
+        data = {}
+
+        if query_type == QueryType.DOMAIN: data['domain'] = query
+        elif query_type == QueryType.URL: data['url'] = query
+
+        res = requests.post('https://www.hybrid-analysis.com/api/v2/search/terms', headers=headers, data=data)
+
+        score = res.json()["result"][0]['threat_score']
+
+        msg += f"<br><br>HA has assessed that this {list(data.keys())[0]} has a threat score of {score}"
+
+        return Result(
+            certainty=score/100,
+            raw=res.text,
+            timestamp=time.time(),
+            message=msg)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
-        raise NotImplementedError(
-            "This is a test heuristic and does not implement "
-            "allowed_query_types.")
+        return (QueryType.DOMAIN, QueryType.URL)

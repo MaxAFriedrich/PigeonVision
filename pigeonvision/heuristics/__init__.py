@@ -10,10 +10,10 @@ class AllHeuristics:
     always = [
         ['spamhaus', 0.8],
         ['virus_total', 0.95],
+        ['hybrid_analysis', 0.9],
         ['dns_lookup', 0.4],
         ['geolocation', 0.7],
         ['whois', 1],
-        ['hybrid_analysis', 0.9],
         ['threatfox', 0.8],
         ['safe_browsing', 0.9],
         ['abuseipdb', 0.9],
