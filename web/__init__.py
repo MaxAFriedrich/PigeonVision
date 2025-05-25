@@ -1,6 +1,9 @@
+import os
 from pathlib import Path
 
+import dotenv
 import markdown
+import requests
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -9,6 +12,7 @@ from starlette.staticfiles import StaticFiles
 
 from pigeonvision import main
 
+dotenv.load_dotenv()
 app = FastAPI()
 
 static = Path(__file__).parent / "static"
@@ -43,15 +47,40 @@ async def root():
     else:
         readme_html = "<p>README not found.</p>"
     template = templates.get_template("index.html")
-    return HTMLResponse(template.render(readme_html=readme_html))
+    return HTMLResponse(template.render(
+        readme_html=readme_html,
+        turnstile_site_key=os.getenv("TURNSTILE_SITE_KEY"),
+        dev=os.getenv("DEV", "false")
+    ))
 
 
 class QueryRequest(BaseModel):
     query: str
+    token: str
+
+
+def verify_turnstile(token: str) -> bool:
+    if os.getenv("DEV") == 'true':
+        return True
+    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    payload = {
+        "secret": os.getenv("TURNSTILE_SECRET_KEY"),
+        "response": token,
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    outcome = response.json()
+
+    if outcome.get("success"):
+        return True
+    return False
 
 
 @app.post("/query")
 async def query_endpoint(request: QueryRequest):
+    if not verify_turnstile(request.token):
+        return {"ok": False, "error": "Turnstile verification failed."}
     certainty_word, message, certainty = main(request.query)
     return {"ok": True, "summary": certainty_word, "more": message,
             "certainty": certainty}

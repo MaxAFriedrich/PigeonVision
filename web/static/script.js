@@ -33,19 +33,34 @@ queryForm.addEventListener("submit", function (event) {
         return;
     }
 
-    togglePageVisibility(homePage);
-    togglePageVisibility(loadingPage);
+    if (DEV === true) {
+        togglePageVisibility(homePage);
+        togglePageVisibility(loadingPage);
+        fetchResult(query, "test-token");
+        return;
+    }
 
-    fetchResult(query);
+    turnstile.ready(function () {
+        turnstile.render("#turnstile", {
+            sitekey: SITEKEY,
+            callback: function (token) {
+                togglePageVisibility(homePage);
+                togglePageVisibility(loadingPage);
+
+                fetchResult(query, token);
+            },
+        });
+    });
+
 });
 
-function fetchResult(query) {
+function fetchResult(query, token) {
     fetch('/query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({query: query.trim()})
+            body: JSON.stringify({query: query.trim(), token: token})
         }
     ).then(response => {
         if (!response.ok) {
