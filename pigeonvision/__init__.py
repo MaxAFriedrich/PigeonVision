@@ -7,36 +7,45 @@ from pigeonvision.validate import QueryType
 persistent.load()
 
 
-def certainty_to_estimate_word(certainty: float) -> str:
+def certainty_to_estimate_word(certainty: float, query_type: QueryType) -> str:
     if certainty == 1.0:
         return f"We are certain that the {query_type.value} is malicious."
     elif 0.87 <= certainty < 1.0:
-        return f"We are almost certain that the {query_type.value} is malicious."
+        return (f"We are almost certain that the {query_type.value} is "
+                f"malicious.")
     elif 0.60 <= certainty < 0.87:
-        return f"We think it is probable that the {query_type.value} is malicious."
+        return (f"We think it is probable that the {query_type.value} is "
+                f"malicious.")
     elif 0.40 <= certainty < 0.60:
-        return (f"We think chances are about even as to whether the {query_type.value} is "
-                "malicious or not.")
+        return (
+            f"We think chances are about even as to whet"
+            f"her the {query_type.value} is "
+            "malicious or not.")
     elif 0.20 <= certainty < 0.40:
-        return (f"We think there is a realistic, but low possibility that the {query_type.value} is "
-                "malicious.")
+        return (
+            f"We think there is a realistic, but low possibility that the "
+            f"{query_type.value} is "
+            "malicious.")
     elif 0.01 <= certainty < 0.20:
-        return f"We think it is unlikely that the {query_type.value} is malicious."
+        return (f"We think it is unlikely that the {query_type.value} is "
+                f"malicious.")
     elif 0 <= certainty < 0.01:
         return f"We are certain that the {query_type.value} is not malicious."
     else:
         raise ValueError(f"Unknown certainty value: {certainty}")
 
 
-def main(query: str, verbose: bool, level: str) -> (str, str, float):
+def main(query: str, verbose: bool = False, level: str = "INFO") -> (
+        str, str, float):
     message = ""
 
     logger = logging.getLogger(__name__)
     log_level = getattr(logging, level.upper())
 
-    logging.basicConfig(encoding='utf-8', 
-                        level=log_level, 
-                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(encoding='utf-8',
+                        level=log_level,
+                        format='%(asctime)s - %(name)s - %(levelname)s - %('
+                               'message)s')
 
     if not verbose: logging.basicConfig(filename=persistent.LOCAL_APP_DATA)
 
@@ -45,15 +54,15 @@ def main(query: str, verbose: bool, level: str) -> (str, str, float):
     query_type, validation_outcome, normalised_query = validate.validate_query(
         query)
 
-    logger.info("QueryType: %s Validation outcome: %s Normalised query: %s", 
+    logger.info("QueryType: %s Validation outcome: %s Normalised query: %s",
                 query_type, validation_outcome, normalised_query)
 
     if validation_outcome == validate.ValidationOutcome.INVALID:
-        return "This is not a valid query.", "INVALID"
+        return "This is not a valid query.", "INVALID", 0.0
     elif validation_outcome == validate.ValidationOutcome.WHITELIST:
         return ("This domain is certainly not malicious.",
                 "The item you queried is whitelisted and therefore we do not "
-                "think it is malicious.")
+                "think it is malicious.", 0.0)
     elif validation_outcome != validate.ValidationOutcome.UNCERTAIN:
         raise ValueError("Unknown validation outcome.")
 
@@ -61,7 +70,7 @@ def main(query: str, verbose: bool, level: str) -> (str, str, float):
         return (
             "This query is in an unknown format.",
             "Valid formarts are: "
-            "IP address, domain name, email address, URL, MD5 or SHA1 hash.")
+            "IP address, domain name, email address, URL, MD5 or SHA1 hash.", 0.0)
 
     if query_type == QueryType.URL:
         redirect_count = 0
@@ -70,13 +79,15 @@ def main(query: str, verbose: bool, level: str) -> (str, str, float):
         try:
             final_url, redirect_count, status_code = redirects.follow_redirects(
                 query)
-            logging.debug("Redirect results: %s %s %s", final_url, redirect_count, status_code)
+            logging.debug("Redirect results: %s %s %s", final_url,
+                          redirect_count, status_code)
         except Exception as e:
             logging.error("Redirects for %s failed", query)
             message += (f"We could not follow redirects for this URL: "
                         f"{str(e)}<br>")
         if redirect_count > 0:
-            logging.info("Redirects followed, renormalising final URL %s", final_url)
+            logging.info("Redirects followed, renormalising final URL %s",
+                         final_url)
             normalised_query = validate.normalise.url(final_url)
             logging.debug("Normalised query now %s", normalised_query)
             message += (
@@ -86,8 +97,9 @@ def main(query: str, verbose: bool, level: str) -> (str, str, float):
 
     logging.debug("Running heuristics on %s")
     certainty, heuristics_message = heuristics.run(normalised_query, query_type)
-    logging.info("Heuristics certainty: %f Message: %s", certainty, heuristics_message)
-    certainty_word = certainty_to_estimate_word(certainty)
+    logging.info("Heuristics certainty: %f Message: %s", certainty,
+                 heuristics_message)
+    certainty_word = certainty_to_estimate_word(certainty, query_type)
     message = ((f"<h1>We think that there is a {certainty * 100:.2f}% chance "
                 f"that the item is malicious because:</h1>") + message +
                heuristics_message)
