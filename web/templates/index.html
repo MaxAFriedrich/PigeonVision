@@ -10,6 +10,11 @@
     <link rel="manifest" href="/static/site.webmanifest">
     <link rel="stylesheet" href="/static/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+    <script>
+        const SITEKEY = "{{ turnstile_site_key }}";
+        const DEV = {{ dev }};
+    </script>
 </head>
 <body>
 <main id="home-page" style="display: flex">
@@ -28,6 +33,7 @@
                     Go
                 </button>
             </div>
+            <div id="turnstile"></div>
         </form>
 
         <p style="max-width: 75vw;">
