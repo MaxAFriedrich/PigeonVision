@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import math
 
 import dotenv
 import requests
@@ -27,10 +28,17 @@ class virus_total(Heuristic):
                 summary.get("malicious", 0) + summary.get("suspicious", 0) + \
                 summary.get("harmless", 0)
         malicious = summary.get("malicious", 0) + summary.get("suspicious", 0)
-        if malicious == 0 or total == 0:
-            certainty = 0.0
+        if total == 0:
+            return Result(
+                certainty=-1,
+                message="<h2>VirusTotal</h2>VirusTotal has no data, and so has been disregarded",
+                raw=data,
+                timestamp=time.time()
+            )
+        elif total == 0:
+            certainty = 0
         else:
-            certainty = malicious / total
+            certainty = 1 - 1/math.exp(12.5*(malicious / total))
 
         virus_total.logger.debug(
             f"Got certainty of {certainty} for {query} of type {query_type}")

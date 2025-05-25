@@ -21,7 +21,7 @@ class hybrid_analysis(Heuristic):
 
         msg = ("<h2>Hybrid Analysis</h2>Hybrid Analysis is a tool that uses CrowdStrike's sandbox "
             "to determine if something is malicious.<br><br> They come up with a threat "
-            "score out of 100 with each query, which we translate into a percentage score from HA.")
+            "score out of 100 with each query, which we translate into a percentage score from Hybird Analysis.")
 
         headers = {
             'api-key': os.environ["HYBRID_KEY"]
@@ -36,7 +36,7 @@ class hybrid_analysis(Heuristic):
 
         score = res.json()["result"][0]['threat_score']
 
-        msg += f"<br><br>HA has assessed that this {list(data.keys())[0]} has a threat score of {score}"
+        msg += f"<br><br>Hybird Analysis has assessed that this {list(data.keys())[0]} has a threat score of {score}"
 
         return Result(
             certainty=score/100,
