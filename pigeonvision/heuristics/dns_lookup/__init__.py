@@ -6,7 +6,7 @@ import requests
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
 from pigeonvision.validate import QueryType
-from pigeonvision.validate.utils import extract
+from pigeonvision.validate.utils import extract_domain
 
 
 class dns_lookup(Heuristic):
@@ -46,6 +46,8 @@ class dns_lookup(Heuristic):
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
+
+        query = extract_domain(query)
 
         dns_lookup.logger.info("Starting DNS and email queries for %s", query)
 
