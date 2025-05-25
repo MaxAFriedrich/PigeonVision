@@ -1,3 +1,4 @@
+import logging
 import time
 
 import requests
@@ -8,6 +9,7 @@ from pigeonvision.validate import QueryType
 
 
 class geolocation(Heuristic):
+    logger = logging.getLogger(__name__)
 
     def __init__(self, query: str, query_type: QueryType):
         super().__init__(query, query_type)
@@ -30,6 +32,8 @@ class geolocation(Heuristic):
         if data['status'] != 'success':
             raise RuntimeError(
                 f"Geolocation query failed for {query}: {res.text}")
+        geolocation.logger.debug(
+            f"Geolocation data fetched successfully for {query}")
         lat = data.get('lat', 0.0)
         lon = data.get('lon', 0.0)
         html = (
