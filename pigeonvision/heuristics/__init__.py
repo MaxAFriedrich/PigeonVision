@@ -34,7 +34,10 @@ class AllHeuristics:
 
 
 def add_imports(array) -> list:
+
+
     for i in range(len(array)):
+        AllHeuristics.logger.debug("Importing heuristic module %s", 'pigeonvision.heuristics'. + heuristic_name)
         heuristic_name, _ = array[i]
         module = importlib.import_module(
             'pigeonvision.heuristics.' + heuristic_name)
@@ -54,6 +57,9 @@ def mean_certainty(
 ) -> float:
     total_reliability = sum(reliability)
     total_trustworthiness = sum(trustworthiness)
+
+    AllHeuristics.logger.debug("Total reliability: %f", total_reliability)
+    AllHeuristics.logger.debug("Total reliability: %f", total_trustworthiness)
     if total_trustworthiness == 0 or total_reliability == 0:
         return 0.0
     return total_reliability / total_trustworthiness
@@ -145,35 +151,30 @@ def run(query: str, query_type: QueryType) -> (float, str):
         reliabilities, trustworthiness, messages
     )
 
-    if sum(reliabilities) / reliabilities.length < 0.5:
+    # Run heuristics that are sometimes run
+    new_reliabilities, new_trustworthiness, new_messages = run_heuristic_list(
+        query, query_type, AllHeuristics.sometimes,
+        reliabilities, trustworthiness, messages
+    )
 
-        # Run heuristics that are sometimes run
-        AllHeuristics.logger.info("Not enough confidence, running sometimes heuristics")
-        new_reliabilities, new_trustworthiness, new_messages = run_heuristic_list(
-            query, query_type, AllHeuristics.sometimes,
-            reliabilities, trustworthiness, messages
-        )
+    reliabilities += new_reliabilities
+    trustworthiness += new_trustworthiness
+    messages += new_messages
 
-        reliabilities += new_reliabilities
-        trustworthiness += new_trustworthiness
-        messages += new_messages
+    # Run heuristics that are rarely run
+    AllHeuristics.logger.info("Not enough confidence, running rarely heuristics")
+    new_reliabilities, new_trustworthiness, new_messages = run_heuristic_list(
+        query, query_type, AllHeuristics.rarely,
+        reliabilities, trustworthiness, messages
+    )
 
-    if sum(reliabilities) / reliabilities.length < 0.5:
-
-        # Run heuristics that are rarely run
-        AllHeuristics.logger.info("Not enough confidence, running rarely heuristics")
-        new_reliabilities, new_trustworthiness, new_messages = run_heuristic_list(
-            query, query_type, AllHeuristics.rarely,
-            reliabilities, trustworthiness, messages
-        )
-
-        reliabilities += new_reliabilities
-        trustworthiness += new_trustworthiness
-        messages += new_messages
+    reliabilities += new_reliabilities
+    trustworthiness += new_trustworthiness
+    messages += new_messages
 
     final_certainty = mean_certainty(reliabilities, trustworthiness)
 
-    AllHeuristics.logger.info("Heuristics complete, mean certainty of %f", final_certainty)
+    AllHeuristics.logger0.info("Heuristics complete, mean certainty of %f", final_certainty)
 
     return (
         final_certainty,
