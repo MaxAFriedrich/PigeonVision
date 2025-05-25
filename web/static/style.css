@@ -172,3 +172,13 @@ td {
     max-width: 40%;
     word-wrap: anywhere;
 }
+
+footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--background);
+    color: var(--color);
+    font-size: 0.8rem;
+}
