@@ -6,7 +6,7 @@ Enter a thing, we determine what that thing is, do our checks and give you a res
 
 # How it works
 
-PigeonVision is a tool built by [Tom Blue](blog.tom-blue.co) and [Max Friedrich](m4x.uk) to determine how malicious various artefacts are.
+PigeonVision is a tool built by [Tom Blue](https://blog.tom-blue.co) and [Max Friedrich](https://m4x.uk) to determine how malicious various artefacts are.
 
 We query various services such as virustotal, spamhaus and other threat intelligence sources, as well as checking DNS records, email configuration and location. We use this data to compute a score and determine a chance that the artefact is malicious.
 
