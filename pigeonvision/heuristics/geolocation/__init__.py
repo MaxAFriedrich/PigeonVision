@@ -6,6 +6,7 @@ import requests
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic
 from pigeonvision.validate import QueryType
+from pigeonvision.validate.utils import extract_domain
 
 
 class geolocation(Heuristic):
@@ -24,6 +25,11 @@ class geolocation(Heuristic):
         #  "lon": -73.5493, "timezone": "America/Toronto",
         #  "isp": "Le Groupe Videotron Ltee", "org": "Videotron Ltee",
         #  "as": "AS5769 Videotron Ltee", "query": "24.48.0.1"}
+        if query_type == QueryType.URL:
+            query = extract_domain(query)
+            geolocation.logger.debug(
+                f"Extracted domain from URL: {query}, running geolocation on "
+                f"it as {query}")
         res = requests.get(f"http://ip-api.com/json/{query}")
         if res.status_code != 200:
             raise RuntimeError(
@@ -73,7 +79,7 @@ class geolocation(Heuristic):
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
-        return [QueryType.IPv6, QueryType.IPv4, QueryType.DOMAIN]
+        return [QueryType.IPv6, QueryType.IPv4, QueryType.DOMAIN, QueryType.URL]
 
 
 if __name__ == '__main__':
