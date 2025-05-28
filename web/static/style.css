@@ -33,7 +33,7 @@ main {
 
 .splash {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     background-image: url('/static/logo.svg');
     background-size: cover;
@@ -181,4 +181,35 @@ footer{
     background-color: var(--background);
     color: var(--color);
     font-size: 0.8rem;
+}
+
+.scroll-down {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.scroll-down svg{
+    width: 5rem;
+    height: 5rem;
+    fill: var(--color);
+    animation: scrollDown 1s infinite;
+}
+
+.scroll-down p{
+    margin: 0;
+}
+
+@keyframes scrollDown {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }

@@ -13,7 +13,7 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
     <script>
         const SITEKEY = "{{ turnstile_site_key }}";
-        const DEV = {{ dev }};
+        const DEV = {{dev}};
     </script>
 </head>
 <body>
@@ -44,7 +44,13 @@
                 decisions.
             </b>
         </p>
-        <p>Scroll down for more info.</p>
+        <div class="scroll-down">
+            <p>Scroll down for more info.</p>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                <polyline points="6,9 12,15 18,9" fill="none" stroke-width="2" stroke="var(--color)"
+                          stroke-linecap="butt" stroke-linejoin="miter"/>
+            </svg>
+        </div>
     </div>
     <article>
         {{ readme_html|safe }}
@@ -69,8 +75,13 @@
         <a class="reset" href="/">← Fly home</a>
         <h1 id="summary">summary</h1>
         <h2 id="query-string">query</h2>
-        <p>Scroll down for more information.
-        </p>
+        <div class="scroll-down">
+            <p>Scroll down for more info.</p>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                <polyline points="6,9 12,15 18,9" fill="none" stroke-width="2" stroke="var(--color)"
+                          stroke-linecap="butt" stroke-linejoin="miter"/>
+            </svg>
+        </div>
     </div>
     <article id="more">
         This is some more info
