@@ -1,6 +1,5 @@
 # TODO
 
-- discopigeon
 - which queries ran and outcomes in a seperate log file
 - add sha256 HA support
 - [LevelBlue Labs](https://otx.alienvault.com/)
