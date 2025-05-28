@@ -4,6 +4,7 @@ const homePage = document.getElementById("home-page");
 const errorPage = document.getElementById("error-page");
 const loadingPage = document.getElementById("loading-page");
 const resultsPage = document.getElementById("results-page");
+const pigeonPage = document.getElementById("pigeon-page");
 const queryForm = document.getElementById("query-form");
 const queryInput = document.getElementById("query-input");
 const queryString = document.getElementById("query-string");
@@ -14,6 +15,8 @@ const resultsSplash = document.getElementById("results-splash");
 
 let jobId = null;
 let jobCheckInterval = null;
+
+const domain = window.location.hostname;
 
 window.onload = function () {
     queryForm.reset();
@@ -33,6 +36,12 @@ queryForm.addEventListener("submit", function (event) {
     const query = queryInput.value;
     if (query.trim() === "") {
         alert("Please enter a search query.");
+        return;
+    }
+
+    if (query.trim()=== domain){
+        togglePageVisibility(homePage);
+        togglePageVisibility(pigeonPage);
         return;
     }
 

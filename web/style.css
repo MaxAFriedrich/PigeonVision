@@ -5,7 +5,7 @@
     --grey: #56524d;
     --background: #09090b;
     --color: #e6dbd3;
-    --red-trans:rgba(199, 32, 0, 0.6);
+    --red-trans: rgba(199, 32, 0, 0.6);
     --green-trans: rgba(94, 163, 98, 0.6);
     --purple-trans: rgba(122, 82, 99, 0.6);
     --grey-trans: rgba(86, 82, 77, 0.6);
@@ -52,7 +52,7 @@ main {
     font-size: min(10vw, 4rem);
 }
 
-.splash h2{
+.splash h2 {
     font-size: min(7vw, 1.5rem);
 }
 
@@ -71,7 +71,7 @@ input, button {
     padding: 0.5rem;
 }
 
-#query-form label{
+#query-form label {
     display: block;
     margin: 0.5rem 0;
     font-weight: 600;
@@ -119,7 +119,7 @@ a {
     color: var(--highlight);
 }
 
-#loading-page .splash{
+#loading-page .splash {
     animation: pulse 2s infinite linear;
 }
 
@@ -150,19 +150,19 @@ a {
 }
 
 @keyframes pulse {
-    0%{
+    0% {
         background-color: var(--grey);
     }
-    50%{
+    50% {
         background-color: var(--grey-trans);
     }
-    100%{
+    100% {
         background-color: var(--grey);
     }
 }
 
 
-table{
+table {
     width: 100%;
     border-collapse: collapse;
 }
@@ -179,7 +179,7 @@ td {
     word-wrap: anywhere;
 }
 
-footer{
+footer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -197,14 +197,14 @@ footer{
     margin-top: 3rem;
 }
 
-.scroll-down svg{
+.scroll-down svg {
     width: 5rem;
     height: 5rem;
     fill: var(--color);
     animation: scrollDown 1s infinite;
 }
 
-.scroll-down p{
+.scroll-down p {
     margin: 0;
 }
 
@@ -217,5 +217,38 @@ footer{
     }
     100% {
         transform: translateY(0);
+    }
+}
+
+
+#pigeon-page .splash {
+    animation: disco 1s infinite;
+    background-position-y: top;
+}
+
+@keyframes disco {
+    0% {
+        background-color: rgba(255, 0, 0, 0.6);
+        background-position-x: 10vw;
+    }
+    16% {
+        background-color: rgba(255, 255, 0, 0.6);
+    }
+    33% {
+        background-color: rgba(0, 255, 0, 0.6);
+    }
+    50% {
+        background-color: rgba(0, 255, 255, 0.6);
+        background-position-x: -10vw;
+    }
+    66% {
+        background-color: rgba(0, 0, 255, 0.6);
+    }
+    83% {
+        background-color: rgba(255, 0, 255, 0.6);
+    }
+    100% {
+        background-color: rgba(255, 0, 0, 0.6);
+        background-position-x: 10vw;
     }
 }
