@@ -67,6 +67,8 @@ def detect(query: str) -> QueryType:
         return QueryType.MD5
     if match(r'^[a-f0-9]{40}$', hash):
         return QueryType.SHA1
+    if match(r'^[a-f0-9]{64}$', hash):
+        return QueryType.SHA256
 
     return QueryType.UNKNOWN
 

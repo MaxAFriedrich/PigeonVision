@@ -74,7 +74,7 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         return (
             "This query is in an unknown format.",
             "Valid formarts are: "
-            "IP address, domain name, email address, URL, MD5 or SHA1 hash.",
+            "IP address, domain name, email address, URL, MD5, SHA256, or SHA1 hash.",
             0.5)
 
     if query_type == QueryType.URL:
@@ -88,7 +88,7 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
                           redirect_count, status_code)
         except Exception as e:
             logging.error("Redirects for %s failed", query)
-            
+
         if redirect_count > 0:
             logging.info("Redirects followed, renormalising final URL %s",
                          final_url)

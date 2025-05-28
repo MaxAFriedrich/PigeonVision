@@ -102,7 +102,7 @@ class threatfox(Heuristic):
     def allowed_query_types() -> list[QueryType]:
         return [
             QueryType.URL, QueryType.DOMAIN, QueryType.IPv4, QueryType.IPv6,
-            QueryType.EMAIL, QueryType.MD5, QueryType.SHA1,
+            QueryType.EMAIL, QueryType.MD5, QueryType.SHA1, QueryType.SHA256
         ]
 
 

@@ -1,7 +1,7 @@
 import logging
+import math
 import os
 import time
-import math
 
 import dotenv
 import requests
@@ -31,14 +31,15 @@ class virus_total(Heuristic):
         if total == 0:
             return Result(
                 certainty=-1,
-                message="<h2>VirusTotal</h2>VirusTotal has no data, and so has been disregarded",
+                message="<h2>VirusTotal</h2>VirusTotal has no data, and so "
+                        "has been disregarded",
                 raw=data,
                 timestamp=time.time()
             )
         elif total == 0:
             certainty = 0
         else:
-            certainty = 1 - 1/math.exp(12.5*(malicious / total))
+            certainty = 1 - 1 / math.exp(12.5 * (malicious / total))
 
         virus_total.logger.debug(
             f"Got certainty of {certainty} for {query} of type {query_type}")
@@ -103,7 +104,7 @@ class virus_total(Heuristic):
         if not virus_total.headers["x-apikey"]:
             raise ValueError(
                 "VIRUSTOTAL_API_KEY environment variable is not set.")
-        if query_type == QueryType.MD5 or query_type == QueryType.SHA1:
+        if query_type in [QueryType.MD5, QueryType.SHA1, QueryType.SHA256]:
             return virus_total.file(query, query_type)
         if query_type in [QueryType.URL, QueryType.EMAIL]:
             query = extract_domain(query)
@@ -121,12 +122,13 @@ class virus_total(Heuristic):
                 f"Fetching VirusTotal data for domain {query}")
             url = f"https://www.virustotal.com/api/v3/domains/{query}"
             return virus_total.fetch_query(query, query_type, url)
+        raise ValueError(f"Unsupported query type: {query_type}")
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
         return [QueryType.MD5, QueryType.SHA1,
                 QueryType.IPv4, QueryType.IPv6, QueryType.DOMAIN,
-                QueryType.EMAIL]
+                QueryType.EMAIL, QueryType.SHA256]
 
 
 if __name__ == "__main__":
