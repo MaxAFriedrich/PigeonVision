@@ -1,8 +1,8 @@
 import time
-import requests
 import os
 
 from dotenv import load_dotenv
+import requests
 
 from pigeonvision.heuristics import Result
 from pigeonvision.heuristics.base import Heuristic

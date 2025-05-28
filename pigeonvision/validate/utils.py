@@ -18,6 +18,7 @@ class QueryType(Enum):
     IPv6 = "ipv6"
     EMAIL = "email"
     UNKNOWN = "unknown"
+    SHA256 = "sha256"
 
     def __dict__(self):
         return {
