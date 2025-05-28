@@ -92,9 +92,9 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
             "or SHA1 hash.",
             0.5)
 
-    if query_type == QueryType.URL:
+    if query_type == QueryType.URL or query_type == QueryType.DOMAIN:
         redirect_count = 0
-        final_url = ""
+        final_url = []
         status_code = 200
         try:
             final_url, redirect_count, status_code = redirects.follow_redirects(
@@ -107,7 +107,11 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         if redirect_count > 0:
             logging.info("Redirects followed, renormalising final URL %s",
                          final_url)
-            normalised_query = validate.normalise.url(final_url)
+            final_url_list = []
+
+            for url in final_url:
+                final_url_list.append(validate.normalise.url(url))
+            [normalised_query].extend(final_url_list)
             logging.debug("Normalised query now %s", normalised_query)
             message += (
                 f"We followed {redirect_count} redirects and ended up at "

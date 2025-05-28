@@ -131,15 +131,41 @@ def run_heuristic_list(
 
     return reliabilities, trustworthiness, messages
 
+def run_all(self, queries: list|str, query_type: QueryType) -> (float, str):
 
-def run(query: str, query_type: QueryType) -> (float, str):
-    """
-    Runs all heuristics for the given query and query type.
+    all_reliabilities = []
+    all_trustworthiness = []
+    all_messages = []
 
-    :param query: The query to be processed.
-    :param query_type: The type of the query.
-    :return: An aggregated result from the heuristics.
-    """
+    for query in queries:
+
+        rel, trust, msg = run_heuristics(query, query_type)
+
+        self.logger.debug("%s resulted in %f %f %s", query, rel, trust, msg)
+
+        all_reliabilities.append(rel)
+        all_trustworthiness.append(trust)
+        all_messages.append(msg)
+
+    final_reliabilities = []
+    final_trustworthiness = []
+    final_messages = []
+
+    for reliability, trustworthiness, messages in zip(all_reliabilities, all_trustworthiness, all_messages):
+
+        final_reliabilities.append(max(reliability))
+        final_trustworthiness.append(trustworthiness[reliability.index(max(reliability))])
+        final_messages.append(messages[reliability.index(max(reliability))])
+
+    return (
+        final_reliabilities,
+        final_trustworthiness,
+        final_messages
+    ) 
+
+
+
+def run_heuristics(query: str, query_type: QueryType) -> (list, list, list):
 
     reliabilities = []
     trustworthiness = []
@@ -164,6 +190,20 @@ def run(query: str, query_type: QueryType) -> (float, str):
         query, query_type, AllHeuristics.rarely,
         reliabilities, trustworthiness, messages
     )
+
+    return reliabilities, trustworthiness, messages
+
+
+
+def run(query: str, query_type: QueryType) -> (float, str):
+    """
+    Runs all heuristics for the given query and query type.
+
+    :param query: The query to be processed.
+    :param query_type: The type of the query.
+    :return: An aggregated result from the heuristics.
+    """
+    reliabilities, trustworthiness, messages = run_heuristics(query, query_type)
 
     final_certainty = mean_certainty(reliabilities, trustworthiness)
 
