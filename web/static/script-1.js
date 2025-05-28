@@ -12,6 +12,9 @@ const more = document.getElementById("more");
 const errorMessage = document.getElementById("error-message");
 const resultsSplash = document.getElementById("results-splash");
 
+let jobId = null;
+let jobCheckInterval = null;
+
 window.onload = function () {
     queryForm.reset();
     window.scrollTo(0, 0);
@@ -54,6 +57,23 @@ queryForm.addEventListener("submit", function (event) {
 
 });
 
+function checkJobStatus() {
+    fetch(`/job/${jobId}`).then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    }).then(response => {
+        if (response.ok) {
+            const data = response.result;
+            displayResults(data);
+            togglePageVisibility(loadingPage);
+            togglePageVisibility(resultsPage);
+            clearInterval(jobCheckInterval);
+        }
+    });
+}
+
 function fetchResult(query, token) {
     fetch('/query', {
             method: 'POST',
@@ -69,9 +89,8 @@ function fetchResult(query, token) {
         return response.json();
     })
         .then(data => {
-            displayResults(data);
-            togglePageVisibility(loadingPage);
-            togglePageVisibility(resultsPage);
+            jobId = data.id;
+            jobCheckInterval = setInterval(checkJobStatus, 1000);
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);

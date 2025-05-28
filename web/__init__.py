@@ -1,10 +1,11 @@
 import os
+import uuid
 from pathlib import Path
 
 import dotenv
 import markdown
 import requests
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
@@ -77,10 +78,42 @@ def verify_turnstile(token: str) -> bool:
     return False
 
 
-@app.post("/query")
-async def query_endpoint(request: QueryRequest):
+jobs = {}
+
+
+def new_job() -> str:
+    job_id = str(uuid.uuid4())
+    while job_id in jobs:
+        job_id = str(uuid.uuid4())
+    jobs[job_id] = None
+    return job_id
+
+
+@app.get("/job/{job_id}")
+async def get_job(job_id: str):
+    if job_id not in jobs:
+        return {"ok": False, "error": "Job not found."}
+    result = jobs[job_id]
+    if result is None:
+        return {"ok": False, "error": "Job is still processing."}
+    del jobs[job_id]
+    return {"ok": True, "result": result}
+
+
+def run_query(request: QueryRequest, job_id: str) -> None:
     if not verify_turnstile(request.token):
-        return {"ok": False, "error": "Turnstile verification failed."}
+        jobs[job_id] = {"ok": False, "error": "Turnstile verification failed."}
+        return
     certainty_word, message, certainty = main(request.query)
-    return {"ok": True, "summary": certainty_word, "more": message,
-            "certainty": certainty}
+    jobs[job_id] = {"ok": True, "summary": certainty_word, "more": message,
+                    "certainty": certainty}
+
+
+@app.post("/query")
+async def query_endpoint(
+        request: QueryRequest,
+        background_tasks: BackgroundTasks
+):
+    job_id = new_job()
+    background_tasks.add_task(run_query, request, job_id)
+    return {"ok": True, "id": job_id}
