@@ -3,7 +3,6 @@
 - discopigeon
 - which queries ran and outcomes in a seperate log file
 - ssl
-- gitops webhook
 - add sha256 HA support
 - [LevelBlue Labs](https://otx.alienvault.com/)
 - [Blacklist Checker](https://blacklistchecker.com/)
