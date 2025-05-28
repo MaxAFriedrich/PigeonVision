@@ -16,5 +16,9 @@ RUN poetry config virtualenvs.create false && \
 # Copy the rest of the application code \
 COPY . /app/
 
+# Generate build slug
+
+RUN poetry run python web/slugify.py
+
 # Set the entrypoint to run the application
 ENTRYPOINT ["poetry", "run", "uvicorn", "web:app", "--host", "0.0.0", "--port", "80"]

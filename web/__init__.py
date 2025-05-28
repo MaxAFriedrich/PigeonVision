@@ -11,24 +11,13 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
 from starlette.staticfiles import StaticFiles
 
+import web.slugify
 from pigeonvision import main
 
 dotenv.load_dotenv()
 app = FastAPI()
 
 static = Path(__file__).parent / "static"
-
-suffixes = {
-    "html": ("text/html", "text"),
-    "css": ("text/css", "text"),
-    "js": ("application/javascript", "text"),
-    "png": ("image/png", "binary"),
-    "jpg": ("image/jpeg", "binary"),
-    "jpeg": ("image/jpeg", "binary"),
-    "svg": ("image/svg+xml", "text"),
-    "ico": ("image/x-icon", "binary"),
-    "webmanifest": ("application/manifest+json", "text"),
-}
 
 app.mount("/static", StaticFiles(directory=static), name="static")
 
@@ -49,10 +38,28 @@ async def root():
         readme_html = "<p>README not found.</p>"
     template = templates.get_template("index.html")
     return HTMLResponse(template.render(
+        slug=slugify.slug,
         readme_html=readme_html,
         turnstile_site_key=os.getenv("TURNSTILE_SITE_KEY"),
         dev=os.getenv("DEV", "false")
     ))
+
+
+@app.get(f"/{slugify.slug}-script.js")
+async def script():
+    script_path = Path(__file__).parent / "script.js"
+    if script_path.exists():
+        return HTMLResponse(script_path.read_text(),
+                            media_type="application/javascript")
+    return HTMLResponse("<p>Script not found.</p>", status_code=404)
+
+
+@app.get(f"/{slugify.slug}-style.css")
+async def style():
+    style_path = Path(__file__).parent / "style.css"
+    if style_path.exists():
+        return HTMLResponse(style_path.read_text(), media_type="text/css")
+    return HTMLResponse("<p>Style not found.</p>", status_code=404)
 
 
 class QueryRequest(BaseModel):
