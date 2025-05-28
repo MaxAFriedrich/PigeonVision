@@ -2,7 +2,6 @@
 
 - discopigeon
 - which queries ran and outcomes in a seperate log file
-- ssl
 - add sha256 HA support
 - [LevelBlue Labs](https://otx.alienvault.com/)
 - [Blacklist Checker](https://blacklistchecker.com/)

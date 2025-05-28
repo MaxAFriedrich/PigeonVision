@@ -111,7 +111,11 @@ def run_query(request: QueryRequest, job_id: str) -> None:
     if not verify_turnstile(request.token):
         jobs[job_id] = {"ok": False, "error": "Turnstile verification failed."}
         return
-    certainty_word, message, certainty = main(request.query)
+    try:
+        certainty_word, message, certainty = main(request.query)
+    except Exception as e:
+        jobs[job_id] = {"ok": False, "error": str(e)}
+        return
     jobs[job_id] = {"ok": True, "summary": certainty_word, "more": message,
                     "certainty": certainty}
 
