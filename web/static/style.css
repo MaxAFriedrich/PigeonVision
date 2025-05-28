@@ -71,6 +71,12 @@ input, button {
     padding: 0.5rem;
 }
 
+#query-form label{
+    display: block;
+    margin: 0.5rem 0;
+    font-weight: 600;
+}
+
 .reset {
     position: absolute;
     top: 1rem;
