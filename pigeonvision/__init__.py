@@ -36,6 +36,23 @@ def certainty_to_estimate_word(certainty: float, query_type: QueryType) -> str:
         raise ValueError(f"Unknown certainty value: {certainty}")
 
 
+def log_query(func):
+    def wrapper(query: str, *args, **kwargs):
+        query_time = int(time.time())
+        result = func(query, *args, **kwargs)
+        try:
+            # certainty is the third return value from main
+            certainty = result[2] if len(result) > 2 else 0.0
+            with open(persistent.LOCAL_APP_DATA / 'queries', 'a') as f:
+                f.writelines(f"{query_time} {certainty:.2f}: {query}\n")
+        except Exception as e:
+            logging.error("Failed to log query: %s", e)
+        return result
+
+    return wrapper
+
+
+@log_query
 def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         str, str, float):
     message = ""
@@ -51,9 +68,6 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
     if not verbose: logging.basicConfig(filename=persistent.LOCAL_APP_DATA)
 
     logger.debug("Starting pigeon vision")
-
-    with open(persistent.LOCAL_APP_DATA / 'queries', 'a') as f:
-        f.writelines(f"{int(time.time())}: {query}\n")
 
     query_type, validation_outcome, normalised_query = validate.validate_query(
         query)
@@ -74,7 +88,8 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
         return (
             "This query is in an unknown format.",
             "Valid formarts are: "
-            "IP address, domain name, email address, URL, MD5, SHA256, or SHA1 hash.",
+            "IP address, domain name, email address, URL, MD5, SHA256, "
+            "or SHA1 hash.",
             0.5)
 
     if query_type == QueryType.URL:
