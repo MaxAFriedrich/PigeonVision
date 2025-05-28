@@ -1,7 +1,6 @@
 # TODO
 
 - discopigeon
-- timeout following redirects
 - which queries ran and outcomes in a seperate log file
 - certainty in logs
 - ssl

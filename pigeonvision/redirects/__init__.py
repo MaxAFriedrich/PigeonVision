@@ -11,7 +11,7 @@ def follow_redirects(url) -> (str, int, int):
     logger.debug("Following redirects for %s", url)
     session = requests.Session()
 
-    response = session.get(url, allow_redirects=True)
+    response = session.get(url, allow_redirects=True, timeout=10)
     last_url = response.history[-1].url if response.history else response.url
     num_redirects = len(response.history)
     status_code = response.status_code
