@@ -1,6 +1,7 @@
 import time
 import os
 import logging
+import requests
 
 from dotenv import load_dotenv
 
@@ -27,7 +28,8 @@ class urlhaus(Heuristic):
             'Auth-Key': os.environ['URLHAUS_KEY']
         }
 
-        if query_type == query_type.DOMAIN or query_type == query_type.IPv4 or query_type == query_type.IPv6:
+        if query_type == query_type.DOMAIN or query_type == query_type.IPv4 or \
+            query_type == query_type.IPv6 or query_type == query_type.URL:
 
             urlhaus.logger.debug("Getting URL data")
             data = {
@@ -35,8 +37,9 @@ class urlhaus(Heuristic):
             }
 
             res = requests.post('https://urlhaus-api.abuse.ch/v1/payload/', data=data, headers=headers)
-            urlhaus.logger.debug(res.json())
-            return
+
+            print(res.json())
+            return res.json()
 
         urlhaus.logger.debug("Getting hash data")
 
@@ -50,9 +53,9 @@ class urlhaus(Heuristic):
                 'sha256_hash': query
             }
 
-        res = requests.post('https://urlhaus-api.abuse.ch/v1/payload/', data, headers=headers)
+        res = requests.post('https://urlhaus-api.abuse.ch/v1/payload/', data=data, headers=headers)
 
-        urlhaus.logger.debug(res.json())
+        return res.json()
 
 
 
@@ -62,4 +65,4 @@ class urlhaus(Heuristic):
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
-        return [QueryType.MD5, QueryType.IPv4, QueryType.IPv6, QueryType.DOMAIN, QueryType.SHA256]
+        return [QueryType.MD5, QueryType.IPv4, QueryType.IPv6, QueryType.DOMAIN, QueryType.SHA256, QueryType.URL]
