@@ -2,6 +2,8 @@
 
 - which queries ran and outcomes in a seperate log file
 - add sha256 HA support
+- replace chace with a new cache that caches the final result against the normalised query for 3 days
+- add some of the ublock filter lists in to add data about known tracking domains, i know they are not strictly malicious, but if we are including whois and dns, we should also include "this is a know url/domain that is used for tracking/advertising"
 - [LevelBlue Labs](https://otx.alienvault.com/)
 - [Blacklist Checker](https://blacklistchecker.com/)
 - [Team Cymru 5](https://www.team-cymru.com/)
