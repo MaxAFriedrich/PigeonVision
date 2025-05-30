@@ -41,9 +41,8 @@ class hybrid_analysis(Heuristic):
         return Result(
             certainty=score/100,
             raw=res.text,
-            timestamp=time.time(),
             message=msg)
 
     @staticmethod
     def allowed_query_types() -> list[QueryType]:
-        return (QueryType.DOMAIN, QueryType.URL)
+        return [QueryType.DOMAIN, QueryType.URL]

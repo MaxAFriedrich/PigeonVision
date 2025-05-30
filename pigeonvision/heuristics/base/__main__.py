@@ -17,7 +17,6 @@ def test():
                 certainty=0.95,
                 message="This is a test heuristic result.",
                 raw={"query": query, "type": query_type.value},
-                timestamp=time.time(),
             )
 
         @staticmethod

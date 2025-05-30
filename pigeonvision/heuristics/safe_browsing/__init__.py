@@ -58,7 +58,6 @@ class safe_browsing(Heuristic):
             certainty=certainty,
             message=html,
             raw=matches,
-            timestamp=time.time()
         )
 
     @staticmethod
@@ -69,5 +68,4 @@ class safe_browsing(Heuristic):
 if __name__ == '__main__':
     heuristic = safe_browsing(
         "http://malware.tesing/malware/", QueryType.URL)
-    heuristic.run(force_fetch=True)
     print(heuristic.result)

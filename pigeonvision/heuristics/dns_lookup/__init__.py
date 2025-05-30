@@ -11,7 +11,7 @@ from pigeonvision.validate.utils import extract_domain
 
 class dns_lookup(Heuristic):
 
-    dns_record_types = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SRV', 'SOA', 'TXT', 'CAA', 
+    dns_record_types = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SRV', 'SOA', 'TXT', 'CAA',
     'DS', 'DNSKEY', 'AFSDB', 'APL', 'CDNSKEY', 'CDS', 'CERT', 'CSYNC', 'DHCID', 'DLV']
 
     logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class dns_lookup(Heuristic):
         for test, endpoint, expected in dns_lookup.email_endpoints:
             res = requests.get(endpoint + query)
 
-            if res.json()['summary']['title'] != expected: 
+            if res.json()['summary']['title'] != expected:
                 if test == 'SPF': base_good += 0.4
                 else: base_good += 0.2
 
@@ -75,7 +75,7 @@ class dns_lookup(Heuristic):
             msg += email_msg
             msg += f"Based on the above, we gave the email a malicious confidence of {email_confidence} <br><br>"
 
-            
+
         else:
             msg = '<h2> DNS </h2>'
 
@@ -94,7 +94,6 @@ class dns_lookup(Heuristic):
         return Result(
                 certainty=email_confidence,
                 raw=results,
-                timestamp=time.time(),
                 message=msg)
 
     @staticmethod

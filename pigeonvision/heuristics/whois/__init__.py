@@ -92,7 +92,6 @@ class whois(Heuristic):
             return Result(
                 certainty=-1,
                 raw=whois_data,
-                timestamp=time.time(),
                 message="<p>Could not find registration dates in whois "
                         "data.</p>"
             )
@@ -102,7 +101,6 @@ class whois(Heuristic):
             return Result(
                 certainty=-1,
                 raw=whois_data,
-                timestamp=time.time(),
                 message=whois.build_html(whois_data)
             )
 
@@ -119,7 +117,6 @@ class whois(Heuristic):
         return Result(
             certainty=normalised,
             raw=whois_data,
-            timestamp=time.time(),
             message=whois.build_html(whois_data)
         )
 

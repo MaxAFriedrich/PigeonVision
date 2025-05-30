@@ -34,7 +34,6 @@ class virus_total(Heuristic):
                 message="<h2>VirusTotal</h2>VirusTotal has no data, and so "
                         "has been disregarded",
                 raw=data,
-                timestamp=time.time()
             )
         elif total == 0:
             certainty = 0
@@ -66,7 +65,6 @@ class virus_total(Heuristic):
             certainty=certainty,
             message=html,
             raw=data,
-            timestamp=time.time()
         )
 
     @staticmethod
@@ -88,7 +86,6 @@ class virus_total(Heuristic):
                             f"confidential, you may wish to upload it "
                             f"yourself.</p>",
                     raw={},
-                    timestamp=time.time()
                 )
             raise e
 
@@ -135,5 +132,4 @@ if __name__ == "__main__":
     heuristic = virus_total(
         "1.1.1.1",
         QueryType.IPv4)
-    heuristic.run(force_fetch=True)
     print(heuristic.result)

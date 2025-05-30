@@ -53,7 +53,6 @@ class threatfox(Heuristic):
                 certainty=-1,
                 message=f"<h2>ThreatFox</h2><p>No data found for {query}.</p>",
                 raw={},
-                timestamp=0
             )
         data = result['data']
         no_results = len(data)
@@ -95,7 +94,6 @@ class threatfox(Heuristic):
             certainty=confidence / 100,
             message=message,
             raw=result,
-            timestamp=time.time()
         )
 
     @staticmethod
@@ -111,5 +109,4 @@ if __name__ == "__main__":
         "anefank.mom",
         QueryType.IPv4
     )
-    heuristic.run(True)
     print(heuristic.result)

@@ -74,7 +74,6 @@ class geolocation(Heuristic):
                 'org': data.get('org'),
                 'as': data.get('as')
             },
-            timestamp=time.time(),
             certainty=-1,
             message=html
         )
@@ -86,5 +85,4 @@ class geolocation(Heuristic):
 
 if __name__ == '__main__':
     location = geolocation('1.1.1.1', QueryType.IPv4)
-    location.run(force_fetch=True)
     print(location.result)

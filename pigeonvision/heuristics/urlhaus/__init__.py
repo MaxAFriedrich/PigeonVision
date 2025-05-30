@@ -55,7 +55,6 @@ class urlhaus(Heuristic):
                 certainty=certainty,
                 message=msg,
                 raw=res.json(),
-                timestamp=time.time()
             )
 
     @staticmethod

@@ -2,7 +2,7 @@ import logging
 import logging.config
 import time
 
-from pigeonvision import persistent, heuristics, validate, redirects
+from pigeonvision import persistent, heuristics, validate, redirects, cache
 from pigeonvision.validate import QueryType
 
 persistent.load()
@@ -92,6 +92,12 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
             "or SHA1 hash.",
             0.5)
 
+    cache_result = cache.get(query, query_type)
+    if cache_result:
+        logger.info(
+            f"Found cached query: {query} with type: {query_type}; returning.")
+        return cache_result.summary, cache_result.long, cache_result.certainty
+
     if query_type == QueryType.URL or query_type == QueryType.DOMAIN:
         redirect_count = 0
         final_url = []
@@ -120,11 +126,17 @@ def main(query: str, verbose: bool = False, level: str = "DEBUG") -> (
 
     logging.debug("Running heuristics on %s")
     certainty, heuristics_message = heuristics.run(normalised_query, query_type)
-    logging.info("Heuristics certainty: %f Message: %s", certainty,
+    logging.info("Heuristics certainty: result%f Message: %s", certainty,
                  heuristics_message)
-    certainty_word = certainty_to_estimate_word(certainty, query_type)
+    summary = certainty_to_estimate_word(certainty, query_type)
     message = ((f"<h1>We think that there is a {certainty * 100:.2f}% chance "
                 f"that the item is malicious because:</h1>") + message +
                heuristics_message)
     logging.debug("Execution complete")
-    return certainty_word, message, certainty
+    cache.set(query, query_type, cache.CacheResult(
+        summary,
+        message,
+        certainty,
+        int(time.time())
+    ))
+    return summary, message, certainty
