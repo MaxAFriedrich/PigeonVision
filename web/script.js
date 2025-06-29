@@ -39,7 +39,7 @@ queryForm.addEventListener("submit", function (event) {
         return;
     }
 
-    if (query.trim()=== domain){
+    if (query.trim() === domain) {
         togglePageVisibility(homePage);
         togglePageVisibility(pigeonPage);
         return;

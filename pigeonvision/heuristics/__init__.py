@@ -34,11 +34,10 @@ class AllHeuristics:
 
 
 def add_imports(array) -> list:
-
-
     for i in range(len(array)):
         heuristic_name, _ = array[i]
-        AllHeuristics.logger.debug("Importing heuristic module %s", 'pigeonvision.heuristics.' + heuristic_name)
+        AllHeuristics.logger.debug("Importing heuristic module %s",
+                                   'pigeonvision.heuristics.' + heuristic_name)
         module = importlib.import_module(
             'pigeonvision.heuristics.' + heuristic_name)
         heuristic = getattr(module, heuristic_name)
@@ -131,14 +130,13 @@ def run_heuristic_list(
 
     return reliabilities, trustworthiness, messages
 
-def run_all(self, queries: list|str, query_type: QueryType) -> (float, str):
 
+def run_all(self, queries: list | str, query_type: QueryType) -> (float, str):
     all_reliabilities = []
     all_trustworthiness = []
     all_messages = []
 
     for query in queries:
-
         rel, trust, msg = run_heuristics(query, query_type)
 
         self.logger.debug("%s resulted in %f %f %s", query, rel, trust, msg)
@@ -151,22 +149,22 @@ def run_all(self, queries: list|str, query_type: QueryType) -> (float, str):
     final_trustworthiness = []
     final_messages = []
 
-    for reliability, trustworthiness, messages in zip(all_reliabilities, all_trustworthiness, all_messages):
-
+    for reliability, trustworthiness, messages in zip(all_reliabilities,
+                                                      all_trustworthiness,
+                                                      all_messages):
         final_reliabilities.append(max(reliability))
-        final_trustworthiness.append(trustworthiness[reliability.index(max(reliability))])
+        final_trustworthiness.append(
+            trustworthiness[reliability.index(max(reliability))])
         final_messages.append(messages[reliability.index(max(reliability))])
 
     return (
         final_reliabilities,
         final_trustworthiness,
         final_messages
-    ) 
-
+    )
 
 
 def run_heuristics(query: str, query_type: QueryType) -> (list, list, list):
-
     reliabilities = []
     trustworthiness = []
     messages = []
@@ -185,14 +183,14 @@ def run_heuristics(query: str, query_type: QueryType) -> (list, list, list):
     )
 
     # Run heuristics that are rarely run
-    AllHeuristics.logger.info("Not enough confidence, running rarely heuristics")
+    AllHeuristics.logger.info(
+        "Not enough confidence, running rarely heuristics")
     reliabilities, trustworthiness, messages = run_heuristic_list(
         query, query_type, AllHeuristics.rarely,
         reliabilities, trustworthiness, messages
     )
 
     return reliabilities, trustworthiness, messages
-
 
 
 def run(query: str, query_type: QueryType) -> (float, str):
@@ -207,7 +205,8 @@ def run(query: str, query_type: QueryType) -> (float, str):
 
     final_certainty = mean_certainty(reliabilities, trustworthiness)
 
-    AllHeuristics.logger.info("Heuristics complete, mean certainty of %f", final_certainty)
+    AllHeuristics.logger.info("Heuristics complete, mean certainty of %f",
+                              final_certainty)
 
     return (
         final_certainty,

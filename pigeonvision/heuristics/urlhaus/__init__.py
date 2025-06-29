@@ -10,7 +10,6 @@ from pigeonvision.validate import QueryType
 
 
 class urlhaus(Heuristic):
-
     logger = logging.getLogger(__name__)
 
     def __init__(self, query: str, query_type: QueryType):
@@ -23,14 +22,15 @@ class urlhaus(Heuristic):
 
         urlhaus.logger.debug("Starting URLHaus")
 
-        msg = "<h2>URLHaus</h2>URLHaus is a service that collects malicious URLs and downloads payloads from them."
+        msg = ("<h2>URLHaus</h2>URLHaus is a service that collects malicious "
+               "URLs and downloads payloads from them.")
 
         headers = {
             'Auth-Key': os.environ['URLHAUS_KEY']
         }
 
         if query_type == query_type.DOMAIN or query_type == query_type.IPv4 or \
-            query_type == query_type.IPv6 or query_type == query_type.URL:
+                query_type == query_type.IPv6 or query_type == query_type.URL:
 
             msg += "<br><br>We've checked your URL against URLHaus data"
 
@@ -39,11 +39,14 @@ class urlhaus(Heuristic):
                 'url': query
             }
 
-            res = requests.post('https://urlhaus-api.abuse.ch/v1/url/', data=data, headers=headers)
+            res = requests.post('https://urlhaus-api.abuse.ch/v1/url/',
+                                data=data, headers=headers)
 
             if res.json()['threat'] == 'malware_download':
-                msg += ("<br><br>URLHaus indicated that there's malware on the link you've submitted. "
-                        "Because of this, the URLHaus score is 1")
+                msg += (
+                    "<br><br>URLHaus indicated that there's malware on the "
+                    "link you've submitted. "
+                    "Because of this, the URLHaus score is 1")
                 certainty = 1
             elif res.json['query_status'] == 'no_results':
                 certainty = -1

@@ -18,9 +18,13 @@ class hybrid_analysis(Heuristic):
 
         load_dotenv()
 
-        msg = ("<h2>Hybrid Analysis</h2>Hybrid Analysis is a tool that uses CrowdStrike's sandbox "
-            "to determine if something is malicious.<br><br> They come up with a threat "
-            "score out of 100 with each query, which we translate into a percentage score from Hybird Analysis.")
+        msg = (
+            "<h2>Hybrid Analysis</h2>Hybrid Analysis is a tool that uses "
+            "CrowdStrike's sandbox "
+            "to determine if something is malicious.<br><br> They come up "
+            "with a threat "
+            "score out of 100 with each query, which we translate into a "
+            "percentage score from Hybird Analysis.")
 
         headers = {
             'api-key': os.environ["HYBRID_KEY"]
@@ -28,17 +32,22 @@ class hybrid_analysis(Heuristic):
 
         data = {}
 
-        if query_type == QueryType.DOMAIN: data['domain'] = query
-        elif query_type == QueryType.URL: data['url'] = query
+        if query_type == QueryType.DOMAIN:
+            data['domain'] = query
+        elif query_type == QueryType.URL:
+            data['url'] = query
 
-        res = requests.post('https://www.hybrid-analysis.com/api/v2/search/terms', headers=headers, data=data)
+        res = requests.post(
+            'https://www.hybrid-analysis.com/api/v2/search/terms',
+            headers=headers, data=data)
 
         score = res.json()["result"][0]['threat_score']
 
-        msg += f"<br><br>Hybird Analysis has assessed that this {list(data.keys())[0]} has a threat score of {score}"
+        msg += (f"<br><br>Hybird Analysis has assessed that this "
+                f"{list(data.keys())[0]} has a threat score of {score}")
 
         return Result(
-            certainty=score/100,
+            certainty=score / 100,
             raw=res.text,
             message=msg)
 

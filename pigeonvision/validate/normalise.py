@@ -90,7 +90,9 @@ if __name__ == '__main__':
         'https://www.google.com/path?query=param&foo=bar#attribute') ==
             'www.google.com/path')
     assert ip('1.1.1.1   \t') == '1.1.1.1'
-    assert ip('2001:0Db8:85A3:0000:0000:8a2e:0370:7334') == '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+    assert (ip(
+        '2001:0Db8:85A3:0000:0000:8a2e:0370:7334') ==
+        '2001:0db8:85a3:0000:0000:8a2e:0370:7334')
     assert ip('2001::2001') == '2001:0000:0000:0000:0000:0000:0000:2001'
     assert email('mailto:exaMple@examplE.com') == 'exaMple@example.com'
     assert email('exaMple@examplE.com') == 'exaMple@example.com'

@@ -48,5 +48,6 @@ def get_tlds() -> set[str]:
                 print(f"Error writing TLDs to cache: {e}")
     return tlds if tlds else set()
 
+
 if __name__ == '__main__':
     print(get_tlds())

@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>PigeonVision</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    <link rel="manifest" href="/static/site.webmanifest">
-    <link rel="stylesheet" href="/{{slug}}-style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+    <link href="/static/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+    <link href="/static/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="/static/site.webmanifest" rel="manifest">
+    <link href="/{{slug}}-style.css" rel="stylesheet">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
     <script>
         const SITEKEY = "{{ turnstile_site_key }}";
-        const DEV = {{dev}};
+        const DEV = {
+        {
+            dev
+        }
+        }
+        ;
     </script>
 </head>
 <body>
@@ -28,9 +33,9 @@
         <form id="query-form">
             <label>Enter an Email Address, Domain, IP Address, or File Hash</label>
             <div class="input">
-                <input type="text" id="query-input" name="query-input"
-                       placeholder="">
-                <button type="submit" id="query-submit">
+                <input id="query-input" name="query-input" placeholder=""
+                       type="text">
+                <button id="query-submit" type="submit">
                     Go
                 </button>
             </div>
@@ -47,9 +52,9 @@
         </p>
         <div class="scroll-down">
             <p>Scroll down for more info.</p>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                <polyline points="6,9 12,15 18,9" fill="none" stroke-width="2" stroke="var(--color)"
-                          stroke-linecap="butt" stroke-linejoin="miter"/>
+            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <polyline fill="none" points="6,9 12,15 18,9" stroke="var(--color)" stroke-linecap="butt"
+                          stroke-linejoin="miter" stroke-width="2"/>
             </svg>
         </div>
     </div>
@@ -78,9 +83,9 @@
         <h2 id="query-string">query</h2>
         <div class="scroll-down">
             <p>Scroll down for more info.</p>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                <polyline points="6,9 12,15 18,9" fill="none" stroke-width="2" stroke="var(--color)"
-                          stroke-linecap="butt" stroke-linejoin="miter"/>
+            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <polyline fill="none" points="6,9 12,15 18,9" stroke="var(--color)" stroke-linecap="butt"
+                          stroke-linejoin="miter" stroke-width="2"/>
             </svg>
         </div>
     </div>
