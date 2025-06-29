@@ -6,8 +6,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from pigeonvision.heuristics import Result
-from pigeonvision.heuristics.base import Heuristic
+from pigeonvision.heuristics.base import Heuristic, Result
 from pigeonvision.validate import QueryType
 
 

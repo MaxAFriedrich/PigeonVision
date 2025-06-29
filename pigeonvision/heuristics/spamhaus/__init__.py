@@ -6,8 +6,7 @@ import time
 import requests
 from dotenv import load_dotenv
 
-from pigeonvision.heuristics.base import Heuristic
-from pigeonvision.heuristics.base.result import Result
+from pigeonvision.heuristics.base import Heuristic, Result
 from pigeonvision.heuristics.spamhaus.spamhaus_tags import tag_messages
 from pigeonvision.validate.utils import QueryType, extract_domain
 

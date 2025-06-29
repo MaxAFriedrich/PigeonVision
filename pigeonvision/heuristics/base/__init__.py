@@ -6,6 +6,20 @@ from pigeonvision.validate import QueryType
 __ALL__ = ["Heuristic", "Result"]
 
 
+@dataclass
+class Result:
+    certainty: float
+    message: str
+    raw: dict
+
+    def __dict__(self):
+        return {
+            "certainty": self.certainty,
+            "message": self.message,
+            "raw": self.raw,
+        }
+
+
 class Heuristic(ABC):
 
     def __init__(self, query: str, query_type: QueryType):
@@ -40,17 +54,3 @@ class Heuristic(ABC):
         :return: List of QueryType enums that this heuristic supports.
         """
         pass
-
-
-@dataclass
-class Result:
-    certainty: float
-    message: str
-    raw: dict
-
-    def __dict__(self):
-        return {
-            "certainty": self.certainty,
-            "message": self.message,
-            "raw": self.raw,
-        }

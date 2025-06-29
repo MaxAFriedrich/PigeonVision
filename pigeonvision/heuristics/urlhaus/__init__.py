@@ -5,8 +5,7 @@ import requests
 
 from dotenv import load_dotenv
 
-from pigeonvision.heuristics import Result
-from pigeonvision.heuristics.base import Heuristic
+from pigeonvision.heuristics.base import Heuristic, Result
 from pigeonvision.validate import QueryType
 
 
