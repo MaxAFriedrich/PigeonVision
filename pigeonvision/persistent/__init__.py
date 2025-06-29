@@ -1,7 +1,7 @@
+import logging
 from pathlib import Path
 
 import platformdirs
-import logging
 from dotenv import load_dotenv
 
 LOCAL_APP_DATA = Path(platformdirs.user_data_dir('pigeonvision'))
@@ -12,6 +12,8 @@ def load():
     """
     Load the pigeonvision persistent data directories.
     """
+    print(
+        f"App data directory: {LOCAL_APP_DATA}, Cache directory: {LOCAL_CACHE}")
     logger = logging.getLogger(__name__)
 
     LOCAL_APP_DATA.mkdir(parents=True, exist_ok=True)
