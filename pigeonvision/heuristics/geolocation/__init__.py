@@ -1,7 +1,8 @@
 import logging
-import time
+import os
 
 import requests
+from dotenv import load_dotenv
 
 from pigeonvision.heuristics.base import Heuristic, Result
 from pigeonvision.validate import QueryType
@@ -16,14 +17,19 @@ class geolocation(Heuristic):
 
     @staticmethod
     def fetch(query: str, query_type: QueryType):
-        # curl http://ip-api.com/json/24.48.0.1
-        # {"status": "success", "country": "Canada", "countryCode": "CA",
-        # "region": "QC",
-        #  "regionName": "Quebec", "city": "Montreal", "zip": "H1K", "lat":
-        #  45.6085,
-        #  "lon": -73.5493, "timezone": "America/Toronto",
-        #  "isp": "Le Groupe Videotron Ltee", "org": "Videotron Ltee",
-        #  "as": "AS5769 Videotron Ltee", "query": "24.48.0.1"}
+        # curl ipinfo.io/{query}?token={IPINFO_KEY}
+        # {
+        #     "ip": "8.8.8.8",
+        #     "hostname": "dns.google",
+        #     "city": "Mountain View",
+        #     "region": "California",
+        #     "country": "US",
+        #     "loc": "37.4056,-122.0775",
+        #     "org": "AS15169 Google LLC",
+        #     "postal": "94043",
+        #     "timezone": "America/Los_Angeles",
+        #     "anycast": true
+        # }
         geolocation.logger.debug("Starting geolocation")
 
         if query_type == QueryType.URL:
@@ -31,24 +37,26 @@ class geolocation(Heuristic):
             geolocation.logger.debug(
                 f"Extracted domain from URL: {query}, running geolocation on "
                 f"it as {query}")
-        res = requests.get(f"http://ip-api.com/json/{query}")
+        load_dotenv()
+        res = requests.get(f'https://ipinfo.io/{query}',
+                           params={'token': os.environ['IPINFO_KEY']})
         if res.status_code != 200:
             raise RuntimeError(
                 f"Failed to fetch geolocation data for {query}: {res.text}")
         data = res.json()
-        if data['status'] != 'success':
+        if data.get('error'):
             raise RuntimeError(
                 f"Geolocation query failed for {query}: {res.text}")
         geolocation.logger.debug(
             f"Geolocation data fetched successfully for {query}")
-        lat = data.get('lat', 0.0)
-        lon = data.get('lon', 0.0)
+        loc = data.get('loc', '0.0,0.0').split(',')
+        lat = float(loc[0]) if len(loc) > 0 else 0.0
+        lon = float(loc[1]) if len(loc) > 1 else 0.0
         html = (
             "<h2>Geolocation Information</h2>"
             f"<p>Looks to be located in {data.get('city', 'unknown')}, "
-            f"{data.get('regionName', 'unknown')}, "
-            f"{data.get('country', 'unknown')} ("
-            f"{data.get('countryCode', 'unknown')}).</p>"
+            f"{data.get('region', 'unknown')}, "
+            f"{data.get('country', 'unknown')}.</p>"
             "<p>This is not factored into the confidence score as geolcation "
             "is not be reliable.</p>"
             f'<iframe width="100%" height="400" frameborder="0" '
@@ -59,20 +67,7 @@ class geolocation(Heuristic):
 
         )
         return Result(
-            raw={
-                'country': data.get('country'),
-                'country_code': data.get('countryCode'),
-                'region': data.get('region'),
-                'region_name': data.get('regionName'),
-                'city': data.get('city'),
-                'zip': data.get('zip'),
-                'lat': data.get('lat'),
-                'lon': data.get('lon'),
-                'timezone': data.get('timezone'),
-                'isp': data.get('isp'),
-                'org': data.get('org'),
-                'as': data.get('as')
-            },
+            raw=data,
             certainty=-1,
             message=html
         )
