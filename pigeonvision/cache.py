@@ -65,4 +65,20 @@ def set(query: str, query_type: str, cache_result: CacheResult) -> None:
         f.write(out)
 
 
-__ALL__ = [get, set, CacheResult]
+def purge() -> None:
+    # Purge all cache results older than 3 days
+    logger.info("Purging cache")
+    total_purged = 0
+    total_files = 0
+    for file in persistent.LOCAL_CACHE.glob("*.cache"):
+        total_files += 1
+        with file.open('r') as f:
+            cache_result = CacheResult.from_dict(json.load(f))
+        if cache_result.timestamp < CACHE_TIMEOUT:
+            logger.debug(f"Purging cache file: {file}")
+            file.unlink()
+            total_purged += 1
+    logger.info(f"Purged {total_purged} out of {total_files} cache files.")
+
+
+__ALL__ = [get, set, purge, CacheResult]
