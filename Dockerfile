@@ -16,6 +16,9 @@ RUN poetry config virtualenvs.create false && \
 # Copy the rest of the application code \
 COPY . /app/
 
+# Make sure there is no .env file
+RUN rm -f /app/.env
+
 # Generate build slug
 
 RUN poetry run python web/slugify.py
