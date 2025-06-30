@@ -24,4 +24,5 @@ RUN rm -f /app/.env
 RUN poetry run python web/slugify.py
 
 # Set the entrypoint to run the application
-ENTRYPOINT ["poetry", "run", "uvicorn", "web:app", "--host", "0.0.0", "--port", "80"]
+
+CMD ["poetry", "run", "uvicorn", "web:app", "--host", "0.0.0", "--port", "80"]

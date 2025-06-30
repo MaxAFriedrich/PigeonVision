@@ -10,11 +10,22 @@ This document explains how to build PigeonVision, both for development and produ
 4. Copy the `.env.example` file to `.env` and fill in the required environment variables.
 5. Run `poetry run uvicorn app.main:app --reload` to start the development server.
 
+If you want to test and build the docker environment, you can use the `docker-compose.dev.yml` file. This file is set up
+for development and will use the local codebase instead of a pre-built image. It also tweaks a few environment bits to
+make development easier, but it does not have watch support in the same way the above process does for live server
+reload.
+
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
 ## Production Setup
 
-Grab a copy of the `.env.example` file and fill in the required environment variables. Make sure you rename it to `.env`.
+Grab a copy of the `.env.example` file and fill in the required environment variables. Make sure you rename it to
+`.env`.
 
-Create a `docker-compose.yml` file in the folder you want to store the cache, logs and other data in. The file should look like this:
+Create a `docker-compose.yml` file in the folder you want to store the cache, logs and other data in. The file should
+look like this:
 
 ```yaml
 services:
@@ -24,6 +35,15 @@ services:
       - ./.env:/app/.env
       - ./data/cache:/root/.cache/pigeonvision
       - ./data/data:/root/.local/share/pigeonvision
+    restart: always
+
+  pigeonvision-chron:
+    image: ghcr.io/maxafriedrich/pigeonvision/pigeonvision:latest
+    volumes:
+      - ./.env:/app/.env
+      - ./data/cache:/root/.cache/pigeonvision
+      - ./data/data-chron:/root/.local/share/pigeonvision
+    command: [ "poetry", "run","python3", "-m", "chron" ]
     restart: always
 
   caddy:

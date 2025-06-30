@@ -1,0 +1,20 @@
+services:
+  pigeonvision:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./.env:/app/.env
+      - ./data/cache:/root/.cache/pigeonvision
+      - ./data/data:/root/.local/share/pigeonvision
+    ports:
+      - "8000:80"
+  pigeonvision-chron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./.env:/app/.env
+      - ./data/cache:/root/.cache/pigeonvision
+      - ./data/data-chron:/root/.local/share/pigeonvision
+    command: [ "poetry", "run","python3", "-m", "chron" ]
