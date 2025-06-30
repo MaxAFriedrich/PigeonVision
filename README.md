@@ -92,3 +92,8 @@ This is a list of things we intend to add but have not yet got around to.
 - [Censys](https://search.censys.io/)
 - [Phishtank](https://phishtank.org/)
 - [UrlHaus](https://urlhaus.abuse.ch/)
+
+# Development or Self-Hosting
+
+To get details on how to develop or self-host PigeonVision, please refer to
+the [BUILD.md](https://github.com/MaxAFriedrich/PigeonVision/blob/main/BUILD.md) file.
