@@ -2,6 +2,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass
+from datetime import datetime
 
 from pigeonvision import persistent
 
@@ -51,8 +52,9 @@ def get(query: str, query_type: str) -> CacheResult | None:
     with filename.open('r') as f:
         logger.debug("Cache hit")
         cache_result = CacheResult.from_dict(json.load(f))
-    if cache_result.timestamp > CACHE_TIMEOUT:
+    if cache_result.timestamp < datetime.now().timestamp() - CACHE_TIMEOUT:
         logger.debug("Expired cache entry")
+        return None
     return cache_result
 
 
@@ -65,17 +67,21 @@ def set(query: str, query_type: str, cache_result: CacheResult) -> None:
         f.write(out)
 
 
-def purge() -> None:
+def purge(timeout: int = CACHE_TIMEOUT) -> None:
     # Purge all cache results older than 3 days
     logger.info("Purging cache")
     total_purged = 0
     total_files = 0
+    print(
+        f"removing cache files older than "
+        f"{datetime.now().timestamp() - timeout}", flush=True)
     for file in persistent.LOCAL_CACHE.glob("*.cache"):
         total_files += 1
         with file.open('r') as f:
             cache_result = CacheResult.from_dict(json.load(f))
-        if cache_result.timestamp < CACHE_TIMEOUT:
+        if cache_result.timestamp < datetime.now().timestamp() - timeout:
             logger.debug(f"Purging cache file: {file}")
+            print(f"Purging cache file: {file}", flush=True)
             file.unlink()
             total_purged += 1
     logger.info(f"Purged {total_purged} out of {total_files} cache files.")
